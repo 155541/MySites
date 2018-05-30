@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">MySites</string>
+    <string name="tab_text_1">Restaurant</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="prompt_new_category">New Category</string>
+    <string name="content_description">iv_contentDescription</string>
+    <string name="prompt_category_count_items">Number of sites:</string>
+    <string name="prompt_no_items">0</string>
+    <string name="promp_site_name_mandatory">* Site name</string>
+    <string name="prompt_icon_mandatory">* Icon:</string>
+    <string name="button_pick">pick</string>
+    <string name="prompt_color_mandatory">* Color:</string>
+    <string name="prompt_button_done">done</string>
+    <string name="prompt_description">Description</string>
+</resources>

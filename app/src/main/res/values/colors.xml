@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- SYSTEM VALUES -->
+
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <!-- RESOURCE VALUES -->
+
+    <color name="resource1">#7bd1f4</color>
+    <color name="resource2">#0097dd</color>
+    <color name="resource3">#fc1808</color>
+    <color name="resource4">#fd7b00</color>
+    <color name="resource5">#ffb74c</color>
+    <color name="resource6">#00b200</color>
+    <color name="resource7">#adfa9f</color>
+    <color name="resource8">#ad00d2</color>
+    <color name="resource9">#f9b1f6</color>
+    <color name="resource10">#f2ee68</color>
+
+</resources>
