@@ -93,11 +93,11 @@ public class NewCategoryActivity extends AppCompatActivity {
 
         if (descriptionCount > 50)
         {
-            //editText_description.
+            editText_description.setError("Characters limit is exceed");
         }
         else if (descriptionCount != 0)
         {
-
+            
         }
 
         if (iconObj == null)
