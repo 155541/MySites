@@ -1,5 +1,6 @@
 package revolhope.splanes.com.mysites.view;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -47,7 +48,8 @@ public class ContentActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-
+                Intent i = new Intent(getApplicationContext(), NewCategoryActivity.class);
+                startActivity(i);
             }
         });
 
@@ -59,8 +61,16 @@ public class ContentActivity extends AppCompatActivity
         super.onResume();
 
         AppDatabaseDao dao = new AppDatabase(this);
-        if (prefs.getBoolean("firstrun", true)) {
-            dao.populate(OnPopulate);
+        if (prefs.getBoolean("firstrun", true))
+        {
+            dao.populate(new AppDatabase.OnPopulate()
+            {
+                @Override
+                public void populate(boolean result)
+                {
+
+                }
+            });
             prefs.edit().putBoolean("firstrun", false).apply();
         }
 

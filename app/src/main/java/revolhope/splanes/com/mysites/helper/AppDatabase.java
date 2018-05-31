@@ -27,7 +27,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 // ============================================================================
 
     private static final String DB_NAME = "AppDatabase";
-    private static int VERSION = 0;
+    private static int VERSION = 1;
 
 // ============================================================================
 //                                  TABLES
