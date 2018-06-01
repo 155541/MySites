@@ -20,6 +20,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -123,15 +124,22 @@ public class NewCategoryActivity extends AppCompatActivity {
                         pickerDialog.callback = new OnDialogPicker()
                         {
                             @Override
-                            public void picked(final int result)
+                            public void picked(final Resource resource)
                             {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        imageView_icon.setImageDrawable(getResources().getDrawable(result, null));
-                                        imageView_icon.setTag(result);
-                                    }
-                                });
+                                if (resource != null)
+                                {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            imageView_icon.setImageDrawable(getResources().getDrawable(resource.getResource(), null));
+                                            imageView_icon.setTag(resource.getId());
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    // TODO:
+                                }
                             }
                         };
                         pickerDialog.show(getSupportFragmentManager(), "PickerIconDialog");
@@ -158,15 +166,22 @@ public class NewCategoryActivity extends AppCompatActivity {
                         pickerDialog.callback = new OnDialogPicker()
                         {
                             @Override
-                            public void picked(final int result)
+                            public void picked(final Resource resource)
                             {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        imageView_color.setImageTintList(ColorStateList.valueOf(getColor(result)));
-                                        imageView_color.setTag(result);
-                                    }
-                                });
+                                if (resource != null)
+                                {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            imageView_color.setImageTintList(ColorStateList.valueOf(getColor(resource.getResource())));
+                                            imageView_color.setTag(resource.getId());
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    // TODO
+                                }
                             }
                         };
                         pickerDialog.show(getSupportFragmentManager(), "PickerColorDialog");
@@ -184,8 +199,8 @@ public class NewCategoryActivity extends AppCompatActivity {
                     {
                         final String name = editText_name.getText().toString();
                         String description = editText_description.getText().toString();
-                        int icon = (int) imageView_icon.getTag();
-                        int color = (int) imageView_color.getTag();
+                        String icon = (String) imageView_icon.getTag();
+                        String color = (String) imageView_color.getTag();
 
                         List<Category> list = new ArrayList<>();
                         list.add(new Category(name, icon, color, description));
@@ -197,16 +212,17 @@ public class NewCategoryActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        String msg = "";
+                                        String msg1 = "Category " + name + " added!";
+                                        String msg2 = "Oops, there were troubles while creating category..\n.try again later";
                                         if (result)
                                         {
-                                            msg = "Category " + name + " added!";
+                                            Toast.makeText(getApplicationContext(), msg1, Toast.LENGTH_LONG).show();
+                                            finish();
                                         }
                                         else
                                         {
-                                            msg = "Oops, there were troubles while creating category..\n.try again later";
+                                            Toast.makeText(getApplicationContext(), msg2, Toast.LENGTH_LONG).show();
                                         }
-                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                                     }
                                 });
                             }
@@ -297,11 +313,11 @@ public class NewCategoryActivity extends AppCompatActivity {
                     {
                         if (selectedResource != null)
                         {
-                            callback.picked(selectedResource.getResource());
+                            callback.picked(selectedResource);
                         }
                         else
                         {
-                            callback.picked(-1);
+                            callback.picked(null);
                         }
 
                     }
@@ -435,7 +451,18 @@ public class NewCategoryActivity extends AppCompatActivity {
 
     private interface OnDialogPicker
     {
-        void picked(int result);
+        void picked(Resource resource);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == android.R.id.home)
+        {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

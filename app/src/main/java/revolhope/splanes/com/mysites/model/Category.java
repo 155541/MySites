@@ -9,11 +9,11 @@ public class Category
 {
     private String id;
     private String name;
-    private int icon;
-    private int color;
+    private String icon;
+    private String color;
     private String description;
 
-    public Category(@NonNull String id, @NonNull String name, int icon, int color, @Nullable String description)
+    public Category(@NonNull String id, @NonNull String name, String icon, String color, @Nullable String description)
     {
         this.id = id;
         this.name = name;
@@ -22,7 +22,7 @@ public class Category
         this.description = description;
     }
 
-    public Category(@NonNull String name, int icon, int color, String description)
+    public Category(@NonNull String name, String icon, String color, String description)
     {
         this.id = UUID.randomUUID().toString();
         this.name = name;
@@ -47,19 +47,19 @@ public class Category
         this.name = name;
     }
 
-    public int getIcon() {
+    public String getIcon() {
         return icon;
     }
 
-    public void setIcon(int icon) {
+    public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    public int getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(int color) {
+    public void setColor(String color) {
         this.color = color;
     }
 

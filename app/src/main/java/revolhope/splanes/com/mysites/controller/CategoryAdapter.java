@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -83,7 +84,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
 
     class Holder extends RecyclerView.ViewHolder
     {
-
+        private LinearLayout linearLayout;
         private TextView name;
         private TextView description;
         private TextView count;
@@ -93,7 +94,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
         private Holder (View view)
         {
             super(view);
-
+            linearLayout = view.findViewById(R.id.linearLayout);
             name = view.findViewById(R.id.textView_category_name);
             description = view.findViewById(R.id.textView_category_description);
             count = view.findViewById(R.id.textView_category_items_count);
