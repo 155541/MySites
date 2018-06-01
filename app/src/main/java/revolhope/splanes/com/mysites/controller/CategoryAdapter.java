@@ -46,11 +46,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
 
             int icon = category.getIcon();
             int color = category.getColor();
-            if (icon != -1)
+            if (icon > 0)
             {
                 holder.icon.setImageDrawable(context.getDrawable(icon));
             }
-            if (color != -1)
+            if (color > 0)
             {
                 holder.color.setImageTintList(ColorStateList.valueOf(context.getColor(color)));
             }

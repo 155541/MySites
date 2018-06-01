@@ -56,8 +56,11 @@
 
                 <ImageView
                     android:id="@+id/imageView_category_icon"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:tint="@color/colorPrimary"
+                    android:alpha=".8"/>
 
                 <Space
                     android:layout_width="0dp"
@@ -96,8 +99,10 @@
 
                 <ImageView
                     android:id="@+id/imageView_category_color"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:alpha=".8"/>
 
                 <Space
                     android:layout_width="0dp"

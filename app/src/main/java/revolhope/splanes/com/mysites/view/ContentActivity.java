@@ -60,7 +60,7 @@ public class ContentActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        AppDatabaseDao dao = new AppDatabase(this);
+        AppDatabaseDao dao = AppDatabase.getInstance(this);
         if (prefs.getBoolean("firstrun", true))
         {
             dao.populate(new AppDatabase.OnPopulate()
@@ -68,7 +68,7 @@ public class ContentActivity extends AppCompatActivity
                 @Override
                 public void populate(boolean result)
                 {
-
+                    // TODO
                 }
             });
             prefs.edit().putBoolean("firstrun", false).apply();

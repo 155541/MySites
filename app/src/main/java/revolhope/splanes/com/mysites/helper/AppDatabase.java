@@ -16,7 +16,10 @@ import java.util.UUID;
 
 import revolhope.splanes.com.mysites.R;
 import revolhope.splanes.com.mysites.model.Category;
+import revolhope.splanes.com.mysites.model.Color;
+import revolhope.splanes.com.mysites.model.Icon;
 import revolhope.splanes.com.mysites.model.Item;
+import revolhope.splanes.com.mysites.model.Resource;
 import revolhope.splanes.com.mysites.model.Tag;
 
 public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
@@ -26,6 +29,8 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 //                            DATABASE PARAMETERS
 // ============================================================================
 
+    private static AppDatabase INSTANCE;
+
     private static final String DB_NAME = "AppDatabase";
     private static int VERSION = 1;
 
@@ -34,7 +39,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 // ============================================================================
 
     private static final String TABLE_ICON = "TABLE_ICON";
-    private static final String TABLE_COLOR = "TABLE_ICON";
+    private static final String TABLE_COLOR = "TABLE_COLOR";
     private static final String TABLE_CATEGORY = "TABLE_CATEGORY";
     private static final String TABLE_ITEM = "TABLE_ITEM";
     private static final String TABLE_TAG = "TABLE_TAG";
@@ -163,7 +168,16 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         onCreate(db);
     }
 
-    public AppDatabase(Context context)
+    public static synchronized AppDatabaseDao getInstance(Context context)
+    {
+        if (INSTANCE == null)
+        {
+            INSTANCE = new AppDatabase(context.getApplicationContext());
+        }
+        return INSTANCE;
+    }
+
+    private AppDatabase(Context context)
     {
         super(context, DB_NAME, null, VERSION);
     }
@@ -210,6 +224,20 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     public void getTagsByItem(@NonNull String itemId, @NonNull OnSelect<Tag> callback)
     {
         SelectTagsByItemAsync async = new SelectTagsByItemAsync(this.getReadableDatabase(), itemId, callback);
+        async.execute();
+    }
+
+    @Override
+    public void getColors(@NonNull OnSelect<Resource> callback)
+    {
+        SelectColorsAsync async = new SelectColorsAsync(this.getReadableDatabase(), callback);
+        async.execute();
+    }
+
+    @Override
+    public void getIcons(@NonNull OnSelect<Resource> callback)
+    {
+        SelectIconsAsync async = new SelectIconsAsync(this.getReadableDatabase(), callback);
         async.execute();
     }
 
@@ -307,7 +335,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 values.put(COLOR_RESOURCE, color);
                 if (db.insert(TABLE_COLOR, null, values) == -1)
                 {
-                    db.close();
+                    //TODO: db.close();
                     return false;
                 }
             }
@@ -318,13 +346,13 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
             {
                 values.put(ICON_ID, UUID.randomUUID().toString());
                 values.put(ICON_RESOURCE, res);
-                if (db.insert(TABLE_COLOR, null, values) == -1)
+                if (db.insert(TABLE_ICON, null, values) == -1)
                 {
-                    db.close();
+                    //TODO: db.close();
                     return false;
                 }
             }
-            db.close();
+            //TODO: db.close();
             return true;
         }
 
@@ -364,11 +392,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
                 if (db.insert(TABLE_CATEGORY, null, values) == -1)
                 {
-                    db.close();
+                    //TODO: db.close();
                     return false;
                 }
             }
-            db.close();
+            //TODO: db.close();
             return true;
         }
 
@@ -414,11 +442,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 if (db.insert(TABLE_ITEM, null, values) == -1 ||
                         db.insert(TABLE_LINK_ITEM_CATEGORY, null, valuesLink) == -1)
                 {
-                    db.close();
+                    //TODO: db.close();
                     return false;
                 }
             }
-            db.close();
+            //TODO: db.close();
             return true;
         }
 
@@ -458,11 +486,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 if (db.insert(TABLE_ITEM, null, values) == -1 ||
                         db.insert(TABLE_LINK_ITEM_TAG, null, valuesLink) == -1)
                 {
-                    db.close();
+                    //TODO: db.close();
                     return false;
                 }
             }
-            db.close();
+            //TODO: db.close();
             return true;
         }
 
@@ -497,11 +525,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
                 if (db.insert(TABLE_LINK_ITEM_TAG, null, values) == -1)
                 {
-                    db.close();
+                    //TODO: db.close();
                     return false;
                 }
             }
-            db.close();
+            //TODO: db.close();
             return true;
         }
 
@@ -531,7 +559,15 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         protected List<Category> doInBackground(Void... voids)
         {
 
-            String query = "SELECT * FROM " + TABLE_CATEGORY;
+            String query =
+                    "SELECT cat." + CATEGORY_ID + "," +
+                            " cat." + CATEGORY_NAME + "," +
+                            " ic." + ICON_RESOURCE + "," +
+                            " co." + COLOR_RESOURCE + "," +
+                            " cat." + CATEGORY_DESCRIPTION +
+                            " FROM " + TABLE_CATEGORY + " cat " +
+                            " LEFT JOIN " + TABLE_ICON + " ic ON cat." + CATEGORY_ICON + " = ic." + ICON_ID +
+                            " LEFT JOIN " + TABLE_COLOR + " co ON cat." + CATEGORY_COLOR + " = co." + COLOR_ID;
 
             try (Cursor cursor = db.rawQuery(query, null))
             {
@@ -545,19 +581,19 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
                         id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
                         name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
-                        icon = cursor.getInt(cursor.getColumnIndex(CATEGORY_ICON));
-                        color = cursor.getInt(cursor.getColumnIndex(CATEGORY_COLOR));
+                        icon = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
+                        color = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
                         description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
 
                         list.add(new Category(id, name, icon, color, description));
                     }
                     while(cursor.moveToNext());
-                    db.close();
+                    //TODO: db.close();
                     return list;
                 }
                 else
                 {
-                    db.close();
+                    //TODO: db.close();
                     return null;
                 }
             }
@@ -608,12 +644,12 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         list.add(new Item(id, name, phone, location, web, mail, notes, ubication));
                     }
                     while(cursor.moveToNext());
-                    db.close();
+                    //TODO: db.close();
                     return list;
                 }
                 else
                 {
-                    db.close();
+                    //TODO: db.close();
                     return null;
                 }
             }
@@ -658,12 +694,12 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         list.add(new Tag(id, name));
                     }
                     while(cursor.moveToNext());
-                    db.close();
+                    //TODO: db.close();
                     return list;
                 }
                 else
                 {
-                    db.close();
+                    //TODO: db.close();
                     return null;
                 }
             }
@@ -719,12 +755,12 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         list.add(new Item(id, name, phone, location, web, mail, notes, ubication));
                     }
                     while(cursor.moveToNext());
-                    db.close();
+                    //TODO: db.close();
                     return list;
                 }
                 else
                 {
-                    db.close();
+                    //TODO: db.close();
                     return null;
                 }
             }
@@ -773,12 +809,12 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         list.add(new Tag(id, name));
                     }
                     while(cursor.moveToNext());
-                    db.close();
+                    //TODO: db.close();
                     return list;
                 }
                 else
                 {
-                    db.close();
+                    //TODO: db.close();
                     return null;
                 }
             }
@@ -786,6 +822,108 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
         @Override
         protected void onPostExecute(List<Tag> list)
+        {
+            callback.select(list);
+        }
+    }
+
+    private static class SelectColorsAsync extends AsyncTask<Void, Void, List<Resource>>
+    {
+        private OnSelect<Resource> callback;
+        private SQLiteDatabase db;
+
+        private SelectColorsAsync(SQLiteDatabase db, OnSelect<Resource> callback)
+        {
+            this.callback = callback;
+            this.db = db;
+        }
+
+        @Override
+        protected List<Resource> doInBackground(Void... voids)
+        {
+
+            String query = "SELECT * FROM " + TABLE_COLOR;
+
+            try (Cursor cursor = db.rawQuery(query, null))
+            {
+                if (cursor != null && cursor.moveToFirst())
+                {
+                    List<Resource> list = new ArrayList<>(cursor.getCount());
+                    do
+                    {
+                        String id;
+                        int resource;
+
+                        id = cursor.getString(cursor.getColumnIndex(COLOR_ID));
+                        resource = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
+
+                        list.add(new Color(id, resource));
+                    }
+                    while(cursor.moveToNext());
+                    //TODO: db.close();
+                    return list;
+                }
+                else
+                {
+                    //TODO: db.close();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Resource> list)
+        {
+            callback.select(list);
+        }
+    }
+
+    private static class SelectIconsAsync extends AsyncTask<Void, Void, List<Resource>>
+    {
+        private OnSelect<Resource> callback;
+        private SQLiteDatabase db;
+
+        private SelectIconsAsync(SQLiteDatabase db, OnSelect<Resource> callback)
+        {
+            this.callback = callback;
+            this.db = db;
+        }
+
+        @Override
+        protected List<Resource> doInBackground(Void... voids)
+        {
+
+            String query = "SELECT * FROM " + TABLE_ICON;
+
+            try (Cursor cursor = db.rawQuery(query, null))
+            {
+                if (cursor != null && cursor.moveToFirst())
+                {
+                    List<Resource> list = new ArrayList<>(cursor.getCount());
+                    do
+                    {
+                        String id;
+                        int resource;
+
+                        id = cursor.getString(cursor.getColumnIndex(ICON_ID));
+                        resource = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
+
+                        list.add(new Icon(id, resource));
+                    }
+                    while(cursor.moveToNext());
+                    //TODO: db.close();
+                    return list;
+                }
+                else
+                {
+                    //TODO: db.close();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Resource> list)
         {
             callback.select(list);
         }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import revolhope.splanes.com.mysites.model.Category;
 import revolhope.splanes.com.mysites.model.Item;
+import revolhope.splanes.com.mysites.model.Resource;
 import revolhope.splanes.com.mysites.model.Tag;
 
 public interface AppDatabaseDao
@@ -18,6 +19,9 @@ public interface AppDatabaseDao
     void getTags(@NonNull AppDatabase.OnSelect<Tag> callback);
     void getItemsByCategory(@NonNull String categoryId, @NonNull AppDatabase.OnSelect<Item> callback);
     void getTagsByItem(@NonNull String itemId, @NonNull AppDatabase.OnSelect<Tag> callback);
+
+    void getColors(@NonNull AppDatabase.OnSelect<Resource> callback);
+    void getIcons(@NonNull AppDatabase.OnSelect<Resource> callback);
 
     // INSERTS
     void insertCategories(List<Category> categories, AppDatabase.OnInsert callback);
