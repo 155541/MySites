@@ -9,6 +9,7 @@
 
     <!-- RESOURCE VALUES -->
 
+    <color name="resourceDefault">#BF000000</color>
     <color name="resource1">#7bd1f4</color>
     <color name="resource2">#0097dd</color>
     <color name="resource3">#fc1808</color>
