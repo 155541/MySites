@@ -562,7 +562,9 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
             String query =
                     "SELECT cat." + CATEGORY_ID + "," +
                             " cat." + CATEGORY_NAME + "," +
+                            " ic." + ICON_IC + "," +
                             " ic." + ICON_RESOURCE + "," +
+                            " co." + COLOR_ID + "," +
                             " co." + COLOR_RESOURCE + "," +
                             " cat." + CATEGORY_DESCRIPTION +
                             " FROM " + TABLE_CATEGORY + " cat " +
@@ -576,16 +578,18 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     List<Category> list = new ArrayList<>(cursor.getCount());
                     do
                     {
-                        String id, name, description;
-                        int color, icon;
+                        String id, name, description, colorId, iconId;
+                        int colorRes, iconRes;
 
                         id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
                         name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
-                        icon = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
-                        color = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
+                        iconId = cursor.getString(cursor.getColumnIndex(ICON_ID));
+                        colorId = cursor.getString(cursor.getColumnIndex(COLOR_ID));
+                        iconRes = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
+                        colorRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
                         description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
 
-                        list.add(new Category(id, name, icon, color, description));
+                        list.add(new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description));
                     }
                     while(cursor.moveToNext());
                     //TODO: db.close();
