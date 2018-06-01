@@ -9,7 +9,14 @@ public class Icon extends Resource
     public Icon (@NonNull String id, int resource)
     {
         this.setId(id);
-        this.setResource(resource);
+        if (resource > 0)
+        {
+           this.setResource(resource); 
+        }
+        else
+        {
+            this.setResource(R.drawable.resourceDefault);
+        }
         this.setType(Constants.TYPE_ICON);
     }
 }
