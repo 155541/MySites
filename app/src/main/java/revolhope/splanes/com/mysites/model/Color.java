@@ -9,7 +9,14 @@ public class Color extends Resource
     public Color (@NonNull String id, int resource)
     {
         this.setId(id);
-        this.setResource(resource);
+        if (resource > 0)
+        {
+            this.setResource(resource);
+        }
+        else
+        {
+            this.setResource(R.color.resourceDefault);
+        }
         this.setType(Constants.TYPE_COLOR);
     }
 }
