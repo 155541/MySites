@@ -8,7 +8,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="prompt_new_category">New Category</string>
     <string name="content_description">iv_contentDescription</string>
-    <string name="prompt_category_count_items">Number of sites:</string>
+    <string name="prompt_category_count_items">Sites:</string>
     <string name="prompt_no_items">0</string>
     <string name="promp_site_name_mandatory">* Site name</string>
     <string name="prompt_icon_mandatory">* Icon:</string>

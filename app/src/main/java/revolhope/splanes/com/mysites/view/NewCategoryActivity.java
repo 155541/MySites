@@ -132,6 +132,7 @@ public class NewCategoryActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             imageView_icon.setImageDrawable(getResources().getDrawable(resource.getResource(), null));
+                                            imageView_icon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.resource_default, null)));
                                             imageView_icon.setTag(resource.getId());
                                         }
                                     });
@@ -203,7 +204,7 @@ public class NewCategoryActivity extends AppCompatActivity {
                         String color = (String) imageView_color.getTag();
 
                         List<Category> list = new ArrayList<>();
-                        list.add(new Category(name, icon, color, description));
+                        list.add(new Category(name, new Icon(icon, 0), new Color(color, 0), description));
 
                         dao.insertCategories(list, new AppDatabase.OnInsert() {
                             @Override

@@ -15,10 +15,15 @@ public interface AppDatabaseDao
 
     // SELECTS
     void getCategories(@NonNull AppDatabase.OnSelect<Category> callback);
+    void getCategoriesByName(@NonNull AppDatabase.OnSelect<Category> callback, @NonNull String categoryName);
+    //void getItemsCountByCategory(@NonNull AppDatabase.OnSelect<Integer> callback, @NonNull String )
+
     void getItems(@NonNull AppDatabase.OnSelect<Item> callback);
     void getTags(@NonNull AppDatabase.OnSelect<Tag> callback);
     void getItemsByCategory(@NonNull String categoryId, @NonNull AppDatabase.OnSelect<Item> callback);
     void getTagsByItem(@NonNull String itemId, @NonNull AppDatabase.OnSelect<Tag> callback);
+
+
 
     void getColors(@NonNull AppDatabase.OnSelect<Resource> callback);
     void getIcons(@NonNull AppDatabase.OnSelect<Resource> callback);

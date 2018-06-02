@@ -200,6 +200,13 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     }
 
     @Override
+    public void getCategoriesByName(@NonNull OnSelect<Category> callback, @NonNull String categoryName)
+    {
+        SelectCategoriesByNameAsync async = new SelectCategoriesByNameAsync(this.getReadableDatabase(), categoryName, callback);
+        async.execute();
+    }
+
+    @Override
     public void getItems(@NonNull OnSelect<Item> callback)
     {
         SelectItemsAsync async = new SelectItemsAsync(this.getReadableDatabase(), callback);
@@ -386,8 +393,8 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
             {
                 values.put(CATEGORY_ID, category.getId());
                 values.put(CATEGORY_NAME, category.getName());
-                values.put(CATEGORY_COLOR, category.getColor());
-                values.put(CATEGORY_ICON, category.getIcon());
+                values.put(CATEGORY_COLOR, category.getColor().getId());
+                values.put(CATEGORY_ICON, category.getIcon().getId());
                 values.put(CATEGORY_DESCRIPTION, category.getDescription());
 
                 if (db.insert(TABLE_CATEGORY, null, values) == -1)
@@ -562,16 +569,87 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
             String query =
                     "SELECT cat." + CATEGORY_ID + "," +
                             " cat." + CATEGORY_NAME + "," +
-                            " ic." + ICON_IC + "," +
+                            " ic." + ICON_ID + "," +
                             " ic." + ICON_RESOURCE + "," +
                             " co." + COLOR_ID + "," +
                             " co." + COLOR_RESOURCE + "," +
                             " cat." + CATEGORY_DESCRIPTION +
                             " FROM " + TABLE_CATEGORY + " cat " +
                             " LEFT JOIN " + TABLE_ICON + " ic ON cat." + CATEGORY_ICON + " = ic." + ICON_ID +
-                            " LEFT JOIN " + TABLE_COLOR + " co ON cat." + CATEGORY_COLOR + " = co." + COLOR_ID;
+                            " LEFT JOIN " + TABLE_COLOR + " co ON cat." + CATEGORY_COLOR + " = co." + COLOR_ID +
+                            " ORDER BY cat." + CATEGORY_NAME + " ASC";
 
             try (Cursor cursor = db.rawQuery(query, null))
+            {
+                if (cursor != null && cursor.moveToFirst())
+                {
+                    List<Category> list = new ArrayList<>(cursor.getCount());
+                    do
+                    {
+                        String id, name, description, colorId, iconId;
+                        int colorRes, iconRes;
+
+                        id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
+                        name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
+                        iconId = cursor.getString(cursor.getColumnIndex(ICON_ID));
+                        colorId = cursor.getString(cursor.getColumnIndex(COLOR_ID));
+                        iconRes = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
+                        colorRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
+                        description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
+
+                        list.add(new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description));
+                    }
+                    while(cursor.moveToNext());
+                    //TODO: db.close();
+                    return list;
+                }
+                else
+                {
+                    //TODO: db.close();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Category> list)
+        {
+            callback.select(list);
+        }
+    }
+
+    private static class SelectCategoriesByNameAsync extends AsyncTask<Void, Void, List<Category>>
+    {
+        private OnSelect<Category> callback;
+        private SQLiteDatabase db;
+        private String categoryName;
+
+        private SelectCategoriesByNameAsync(SQLiteDatabase db, String categoryName, OnSelect<Category> callback)
+        {
+            this.callback = callback;
+            this.db = db;
+            this.categoryName = categoryName;
+        }
+
+        @Override
+        protected List<Category> doInBackground(Void... voids)
+        {
+
+            String query =
+                    "SELECT cat." + CATEGORY_ID + "," +
+                            " cat." + CATEGORY_NAME + "," +
+                            " ic." + ICON_ID + "," +
+                            " ic." + ICON_RESOURCE + "," +
+                            " co." + COLOR_ID + "," +
+                            " co." + COLOR_RESOURCE + "," +
+                            " cat." + CATEGORY_DESCRIPTION +
+                            " FROM " + TABLE_CATEGORY + " cat " +
+                            " LEFT JOIN " + TABLE_ICON + " ic ON cat." + CATEGORY_ICON + " = ic." + ICON_ID +
+                            " LEFT JOIN " + TABLE_COLOR + " co ON cat." + CATEGORY_COLOR + " = co." + COLOR_ID +
+                            " WHERE cat." + CATEGORY_NAME + " LIKE ? " +
+                            " ORDER BY cat." + CATEGORY_NAME + " ASC";
+
+            try (Cursor cursor = db.rawQuery(query, new String[]{"%"+ categoryName +"%"}))
             {
                 if (cursor != null && cursor.moveToFirst())
                 {

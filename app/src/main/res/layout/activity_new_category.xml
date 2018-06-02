@@ -59,8 +59,8 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:contentDescription="@string/contentDescription"
-                    android:tint="@color/colorPrimary"
-                    android:alpha=".8"/>
+                    android:src="@drawable/resource_default"
+                    android:alpha=".6"/>
 
                 <Space
                     android:layout_width="0dp"

@@ -2,6 +2,7 @@ package revolhope.splanes.com.mysites.model;
 
 import android.support.annotation.NonNull;
 
+import revolhope.splanes.com.mysites.R;
 import revolhope.splanes.com.mysites.helper.Constants;
 
 public class Color extends Resource
@@ -15,7 +16,7 @@ public class Color extends Resource
         }
         else
         {
-            this.setResource(R.color.resourceDefault);
+            this.setResource(R.color.resource_default);
         }
         this.setType(Constants.TYPE_COLOR);
     }

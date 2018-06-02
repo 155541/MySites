@@ -45,17 +45,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
             holder.name.setText(category.getName());
             holder.description.setText(category.getDescription());
 
-            int icon = category.getIcon();
-            int color = category.getColor();
+            int icon = category.getIcon().getResource();
+            int color = category.getColor().getResource();
             if (icon > 0)
             {
                 holder.icon.setImageDrawable(context.getDrawable(icon));
+                if (color > 0 && color != R.color.resource_default)
+                {
+                    holder.icon.setImageTintList(ColorStateList.valueOf(context.getColor(color)));
+                }
             }
-            if (color > 0)
-            {
-                holder.color.setImageTintList(ColorStateList.valueOf(context.getColor(color)));
-            }
-
             //holder.count.setText(/* GET COUNT */);
         }
     }
@@ -84,21 +83,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
 
     class Holder extends RecyclerView.ViewHolder
     {
-        private LinearLayout linearLayout;
         private TextView name;
         private TextView description;
         private TextView count;
-        private ImageView color;
         private ImageView icon;
 
         private Holder (View view)
         {
             super(view);
-            linearLayout = view.findViewById(R.id.linearLayout);
             name = view.findViewById(R.id.textView_category_name);
             description = view.findViewById(R.id.textView_category_description);
             count = view.findViewById(R.id.textView_category_items_count);
-            color = view.findViewById(R.id.imageView_category_color);
             icon = view.findViewById(R.id.imageView_category_icon);
         }
     }

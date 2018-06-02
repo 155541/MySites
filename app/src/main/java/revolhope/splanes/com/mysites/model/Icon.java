@@ -2,6 +2,7 @@ package revolhope.splanes.com.mysites.model;
 
 import android.support.annotation.NonNull;
 
+import revolhope.splanes.com.mysites.R;
 import revolhope.splanes.com.mysites.helper.Constants;
 
 public class Icon extends Resource
@@ -15,7 +16,7 @@ public class Icon extends Resource
         }
         else
         {
-            this.setResource(R.drawable.resourceDefault);
+            this.setResource(R.drawable.resource_default);
         }
         this.setType(Constants.TYPE_ICON);
     }
