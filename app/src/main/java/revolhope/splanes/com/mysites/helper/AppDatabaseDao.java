@@ -14,9 +14,8 @@ public interface AppDatabaseDao
     void populate(@NonNull AppDatabase.OnPopulate callback);
 
     // SELECTS
-    void getCategories(@NonNull AppDatabase.OnSelect<Category> callback);
-    void getCategoriesByName(@NonNull AppDatabase.OnSelect<Category> callback, @NonNull String categoryName);
-    //void getItemsCountByCategory(@NonNull AppDatabase.OnSelect<Integer> callback, @NonNull String )
+    void getCategories(@NonNull AppDatabase.OnSelectMap<Category, Integer> callback);
+    void getCategoriesByName(@NonNull AppDatabase.OnSelectMap<Category, Integer> callback, @NonNull String categoryName);
 
     void getItems(@NonNull AppDatabase.OnSelect<Item> callback);
     void getTags(@NonNull AppDatabase.OnSelect<Tag> callback);

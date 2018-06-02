@@ -11,7 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import revolhope.splanes.com.mysites.R;
@@ -193,14 +195,14 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 // ============================================================================
 
     @Override
-    public void getCategories(@NonNull OnSelect<Category> callback)
+    public void getCategories(@NonNull OnSelectMap<Category, Integer> callback)
     {
         SelectCategoriesAsync async = new SelectCategoriesAsync(this.getReadableDatabase(), callback);
         async.execute();
     }
 
     @Override
-    public void getCategoriesByName(@NonNull OnSelect<Category> callback, @NonNull String categoryName)
+    public void getCategoriesByName(@NonNull OnSelectMap<Category, Integer> callback, @NonNull String categoryName)
     {
         SelectCategoriesByNameAsync async = new SelectCategoriesByNameAsync(this.getReadableDatabase(), categoryName, callback);
         async.execute();
@@ -551,19 +553,19 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     //                               SELECTS                             //
     //-------------------------------------------------------------------//
 
-    private static class SelectCategoriesAsync extends AsyncTask<Void, Void, List<Category>>
+    private static class SelectCategoriesAsync extends AsyncTask<Void, Void, Map<Category, Integer>>
     {
-        private OnSelect<Category> callback;
+        private OnSelectMap<Category, Integer> callback;
         private SQLiteDatabase db;
 
-        private SelectCategoriesAsync(SQLiteDatabase db, OnSelect<Category> callback)
+        private SelectCategoriesAsync(SQLiteDatabase db, OnSelectMap<Category, Integer> callback)
         {
             this.callback = callback;
             this.db = db;
         }
 
         @Override
-        protected List<Category> doInBackground(Void... voids)
+        protected Map<Category, Integer> doInBackground(Void... voids)
         {
 
             String query =
@@ -573,21 +575,24 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                             " ic." + ICON_RESOURCE + "," +
                             " co." + COLOR_ID + "," +
                             " co." + COLOR_RESOURCE + "," +
-                            " cat." + CATEGORY_DESCRIPTION +
+                            " cat." + CATEGORY_DESCRIPTION + "," +
+                            " COUNT( link."+ LINK_ITEM_CATEGORY_ID_ITEM + ")" +
                             " FROM " + TABLE_CATEGORY + " cat " +
                             " LEFT JOIN " + TABLE_ICON + " ic ON cat." + CATEGORY_ICON + " = ic." + ICON_ID +
                             " LEFT JOIN " + TABLE_COLOR + " co ON cat." + CATEGORY_COLOR + " = co." + COLOR_ID +
+                            " LEFT JOIN " + TABLE_LINK_ITEM_CATEGORY + " link ON cat." + CATEGORY_ID + " = link." + LINK_ITEM_CATEGORY_ID_CATEGORY +
+                            " GROUP BY cat." + CATEGORY_ID +
                             " ORDER BY cat." + CATEGORY_NAME + " ASC";
 
             try (Cursor cursor = db.rawQuery(query, null))
             {
                 if (cursor != null && cursor.moveToFirst())
                 {
-                    List<Category> list = new ArrayList<>(cursor.getCount());
+                    Map<Category, Integer> map = new HashMap<>(cursor.getCount());
                     do
                     {
                         String id, name, description, colorId, iconId;
-                        int colorRes, iconRes;
+                        int colorRes, iconRes, itemCounts;
 
                         id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
                         name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
@@ -596,12 +601,14 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         iconRes = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
                         colorRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
                         description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
+                        itemCounts = cursor.getInt(cursor.getColumnCount()-1);
 
-                        list.add(new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description));
+                        Category cat = new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description);
+                        map.put(cat, itemCounts);
                     }
                     while(cursor.moveToNext());
                     //TODO: db.close();
-                    return list;
+                    return map;
                 }
                 else
                 {
@@ -612,19 +619,19 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         }
 
         @Override
-        protected void onPostExecute(List<Category> list)
+        protected void onPostExecute(Map<Category, Integer> map)
         {
-            callback.select(list);
+            callback.select(map);
         }
     }
 
-    private static class SelectCategoriesByNameAsync extends AsyncTask<Void, Void, List<Category>>
+    private static class SelectCategoriesByNameAsync extends AsyncTask<Void, Void, Map<Category, Integer>>
     {
-        private OnSelect<Category> callback;
+        private OnSelectMap<Category, Integer> callback;
         private SQLiteDatabase db;
         private String categoryName;
 
-        private SelectCategoriesByNameAsync(SQLiteDatabase db, String categoryName, OnSelect<Category> callback)
+        private SelectCategoriesByNameAsync(SQLiteDatabase db, String categoryName, OnSelectMap<Category, Integer> callback)
         {
             this.callback = callback;
             this.db = db;
@@ -632,7 +639,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         }
 
         @Override
-        protected List<Category> doInBackground(Void... voids)
+        protected Map<Category, Integer> doInBackground(Void... voids)
         {
 
             String query =
@@ -642,22 +649,25 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                             " ic." + ICON_RESOURCE + "," +
                             " co." + COLOR_ID + "," +
                             " co." + COLOR_RESOURCE + "," +
-                            " cat." + CATEGORY_DESCRIPTION +
+                            " cat." + CATEGORY_DESCRIPTION + "," +
+                            " COUNT( link."+ LINK_ITEM_CATEGORY_ID_ITEM + ")" +
                             " FROM " + TABLE_CATEGORY + " cat " +
                             " LEFT JOIN " + TABLE_ICON + " ic ON cat." + CATEGORY_ICON + " = ic." + ICON_ID +
                             " LEFT JOIN " + TABLE_COLOR + " co ON cat." + CATEGORY_COLOR + " = co." + COLOR_ID +
+                            " LEFT JOIN " + TABLE_LINK_ITEM_CATEGORY + " link ON cat." + CATEGORY_ID + " = link." + LINK_ITEM_CATEGORY_ID_CATEGORY +
                             " WHERE cat." + CATEGORY_NAME + " LIKE ? " +
+                            " GROUP BY cat." + CATEGORY_ID +
                             " ORDER BY cat." + CATEGORY_NAME + " ASC";
 
             try (Cursor cursor = db.rawQuery(query, new String[]{"%"+ categoryName +"%"}))
             {
                 if (cursor != null && cursor.moveToFirst())
                 {
-                    List<Category> list = new ArrayList<>(cursor.getCount());
+                    Map<Category, Integer> map = new HashMap<>(cursor.getCount());
                     do
                     {
                         String id, name, description, colorId, iconId;
-                        int colorRes, iconRes;
+                        int colorRes, iconRes, itemCounts;
 
                         id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
                         name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
@@ -666,12 +676,14 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         iconRes = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
                         colorRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
                         description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
+                        itemCounts = cursor.getInt(cursor.getColumnCount()-1);
 
-                        list.add(new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description));
+                        Category cat = new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description);
+                        map.put(cat, itemCounts);
                     }
                     while(cursor.moveToNext());
                     //TODO: db.close();
-                    return list;
+                    return map;
                 }
                 else
                 {
@@ -682,9 +694,9 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         }
 
         @Override
-        protected void onPostExecute(List<Category> list)
+        protected void onPostExecute(Map<Category, Integer> map)
         {
-            callback.select(list);
+            callback.select(map);
         }
     }
 
@@ -1046,6 +1058,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     public interface OnSelect<T>
     {
         void select(List<T> selection);
+    }
+
+    public interface OnSelectMap<K,V>
+    {
+        void select(Map<K,V> selectedMap);
     }
 
 }

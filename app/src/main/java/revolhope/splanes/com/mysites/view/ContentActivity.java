@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import revolhope.splanes.com.mysites.R;
 import revolhope.splanes.com.mysites.controller.CategoryAdapter;
@@ -93,10 +94,10 @@ public class ContentActivity extends AppCompatActivity
             {
                 if (!query.isEmpty())
                 {
-                    dao.getCategoriesByName(new AppDatabase.OnSelect<Category>()
+                    dao.getCategoriesByName(new AppDatabase.OnSelectMap<Category, Integer>()
                     {
                         @Override
-                        public void select(final List<Category> selection)
+                        public void select(final Map<Category, Integer> selection)
                         {
                             runOnUiThread(new Runnable()
                             {
@@ -142,10 +143,10 @@ public class ContentActivity extends AppCompatActivity
         }
 
 
-        dao.getCategories(new AppDatabase.OnSelect<Category>()
+        dao.getCategories(new AppDatabase.OnSelectMap<Category, Integer>()
         {
             @Override
-            public void select(final List<Category> selection)
+            public void select(final Map<Category, Integer> selection)
             {
                 runOnUiThread(new Runnable() {
                     @Override

@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import revolhope.splanes.com.mysites.R;
 import revolhope.splanes.com.mysites.model.Category;
@@ -20,7 +22,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
 
     private Context context;
     private LayoutInflater inflater;
-    private List<Category> categories;
+    private Map<Category, Integer> categories;
 
     public CategoryAdapter(Context context)
     {
@@ -41,7 +43,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
     {
         if (categories.size() > position)
         {
-            Category category = categories.get(position);
+            Category category = categories.keySet().toArray(new Category[0])[position];
             holder.name.setText(category.getName());
             holder.description.setText(category.getDescription());
 
@@ -55,7 +57,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
                     holder.icon.setImageTintList(ColorStateList.valueOf(context.getColor(color)));
                 }
             }
-            //holder.count.setText(/* GET COUNT */);
+            holder.count.setText(String.valueOf(categories.get(category)));
         }
     }
 
@@ -71,7 +73,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
         }
     }
 
-    public void setCategories(List<Category> categories)
+    public void setCategories(Map<Category, Integer> categories)
     {
         this.categories = categories;
         notifyDataSetChanged();
