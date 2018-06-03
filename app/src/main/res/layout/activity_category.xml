@@ -44,6 +44,8 @@
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/baseline_add_black_18dp" />
+        app:srcCompat="@drawable/baseline_add_black_18dp"
+        android:tint="@android:color/white"
+        app:fabSize="mini"/>
 
 </android.support.design.widget.CoordinatorLayout>

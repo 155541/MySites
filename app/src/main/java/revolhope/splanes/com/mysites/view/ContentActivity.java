@@ -10,15 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import revolhope.splanes.com.mysites.R;
@@ -69,7 +62,7 @@ public class ContentActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                Intent i = new Intent(getApplicationContext(), NewCategoryActivity.class);
+                Intent i = new Intent(getApplicationContext(), EditCategoryActivity.class);
                 startActivity(i);
             }
         });

@@ -22,10 +22,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.NewCategoryActivity" />
+        <activity android:name=".view.EditCategoryActivity" />
 
         <activity
             android:name=".view.CategoryActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity android:name=".view.EditItemActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
     </application>

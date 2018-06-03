@@ -103,8 +103,10 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     + CATEGORY_ICON + " VARCHAR, "
                     + CATEGORY_COLOR + " VARCHAR, "
                     + CATEGORY_DESCRIPTION + " VARCHAR DEFAULT NULL, "
-                    + "FOREIGN KEY (" + CATEGORY_ICON + ") REFERENCES " + TABLE_ICON + "(" + ICON_ID + "), "
-                    + "FOREIGN KEY (" + CATEGORY_COLOR + ") REFERENCES " + TABLE_COLOR + "(" + COLOR_ID + "))";
+                    + "FOREIGN KEY (" + CATEGORY_ICON + ") REFERENCES " + TABLE_ICON + "(" + ICON_ID + ") "
+                    + "ON UPDATE CASCADE ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" + CATEGORY_COLOR + ") REFERENCES " + TABLE_COLOR + "(" + COLOR_ID + ") "
+                    + "ON UPDATE CASCADE ON DELETE CASCADE)";
 
     private static final String CREATE_TABLE_ITEM =
             "CREATE TABLE IF NOT EXISTS " + TABLE_ITEM + "("
@@ -127,16 +129,20 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     + LINK_ITEM_TAG_ID_ITEM + " VARCHAR, "
                     + LINK_ITEM_TAG_ID_TAG + " VARCHAR, "
                     + "PRIMARY KEY (" + LINK_ITEM_TAG_ID_ITEM + ", " + LINK_ITEM_TAG_ID_TAG +"), "
-                    + "FOREIGN KEY (" + LINK_ITEM_TAG_ID_ITEM + ") REFERENCES " + TABLE_ITEM + "(" + ITEM_ID + "), "
-                    + "FOREIGN KEY (" + LINK_ITEM_TAG_ID_TAG + ") REFERENCES " + TABLE_TAG + "(" + TAG_ID + "))";
+                    + "FOREIGN KEY (" + LINK_ITEM_TAG_ID_ITEM + ") REFERENCES " + TABLE_ITEM + "(" + ITEM_ID + ") "
+                    + "ON UPDATE CASCADE ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" + LINK_ITEM_TAG_ID_TAG + ") REFERENCES " + TABLE_TAG + "(" + TAG_ID + ") "
+                    + "ON UPDATE CASCADE ON DELETE CASCADE)";
 
     private static final String CREATE_TABLE_LINK_ITEM_CATEGORY =
             "CREATE TABLE IF NOT EXISTS " + TABLE_LINK_ITEM_CATEGORY + "("
                     + LINK_ITEM_CATEGORY_ID_ITEM + " VARCHAR, "
                     + LINK_ITEM_CATEGORY_ID_CATEGORY + " VARCHAR, "
                     + "PRIMARY KEY (" + LINK_ITEM_CATEGORY_ID_ITEM + ", " + LINK_ITEM_CATEGORY_ID_CATEGORY +"), "
-                    + "FOREIGN KEY (" + LINK_ITEM_CATEGORY_ID_ITEM + ") REFERENCES " + TABLE_ITEM + "(" + ITEM_ID + "), "
-                    + "FOREIGN KEY (" + LINK_ITEM_CATEGORY_ID_CATEGORY + ") REFERENCES " + TABLE_CATEGORY + "(" + CATEGORY_ID + "))";
+                    + "FOREIGN KEY (" + LINK_ITEM_CATEGORY_ID_ITEM + ") REFERENCES " + TABLE_ITEM + "(" + ITEM_ID + ") "
+                    + "ON UPDATE CASCADE ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" + LINK_ITEM_CATEGORY_ID_CATEGORY + ") REFERENCES " + TABLE_CATEGORY + "(" + CATEGORY_ID + ") "
+                    + "ON UPDATE CASCADE ON DELETE CASCADE)";
 
 // ============================================================================
 //                INITIALIZER & CONSTRUCTOR & POPULATE & DROP
@@ -296,6 +302,14 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 // ============================================================================
 //                                    REMOVES
 // ============================================================================
+
+    @Override
+    public void removeCategories(List<Category> categories, OnRemove callback)
+    {
+        RemoveCategoryAsync async = new RemoveCategoryAsync(this.getWritableDatabase(), callback);
+        async.execute(categories.toArray(new Category[0]));
+    }
+
 
 // ============================================================================
 //                                    ASYNC TASK
@@ -1078,6 +1092,39 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     //-------------------------------------------------------------------//
     //                               REMOVES                             //
     //-------------------------------------------------------------------//
+
+    private static class RemoveCategoryAsync extends AsyncTask<Category, Void, Boolean>
+    {
+        private OnRemove callback;
+        private SQLiteDatabase db;
+
+        private RemoveCategoryAsync(SQLiteDatabase db, OnRemove callback)
+        {
+            this.callback = callback;
+            this.db = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Category... categories)
+        {
+            for (Category category : categories)
+            {
+                if (db.delete(TABLE_CATEGORY,CATEGORY_ID + " = ?", new String[]{ category.getId() }) != 1)
+                {
+                    //TODO: db.close();
+                    return false;
+                }
+            }
+            //TODO: db.close();
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean)
+        {
+            callback.remove(aBoolean);
+        }
+    }
 
 // ============================================================================
 //                                    CALLBACKS

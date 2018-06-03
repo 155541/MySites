@@ -7,7 +7,15 @@
     <string name="content_description">iv_contentDescription</string>
     <string name="prompt_category_count_items">Sites:</string>
     <string name="prompt_no_items">0</string>
-    <string name="promp_site_name_mandatory">* Site name</string>
+    <string name="promp_category_name_mandatory">* Name</string>
+    <string name="promp_item_name_mandatory">Name</string>
+    <string name="promp_item_phone_mandatory">Phone</string>
+    <string name="promp_item_location">Location</string>
+    <string name="promp_item_email">Email</string>
+    <string name="promp_item_web">Website</string>
+    <string name="promp_item_notes">Notes</string>
+    <string name="promp_item_tags">Tags</string>
+    <string name="promp_item_ubication">Ubication</string>
     <string name="prompt_icon_mandatory">* Icon:</string>
     <string name="button_pick">pick</string>
     <string name="prompt_color_mandatory">* Color:</string>
@@ -15,4 +23,11 @@
     <string name="prompt_description">Description</string>
     <string name="title_activity_category">CategoryActivity</string>
     <string name="button_new_category_update">Update</string>
+    <string name="button_new_item_update">Update</string>
+    <string name="prompt_confirmation">Confirmation</string>
+    <string name="message_confirmation_delete_category1">Are you sure to delete this category?</string>
+    <string name="message_confirmation_delete_category2">This action can not be undone</string>
+    <string name="prompt_mandatory">Mandatory</string>
+    <string name="prompt_optional">Optional</string>
+    <string name="prompt_tags">Tags</string>
 </resources>

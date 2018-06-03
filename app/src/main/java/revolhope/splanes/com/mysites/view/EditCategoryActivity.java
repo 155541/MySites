@@ -41,7 +41,7 @@ import revolhope.splanes.com.mysites.model.Color;
 import revolhope.splanes.com.mysites.model.Icon;
 import revolhope.splanes.com.mysites.model.Resource;
 
-public class NewCategoryActivity extends AppCompatActivity {
+public class EditCategoryActivity extends AppCompatActivity {
 
     private TextInputEditText editText_name;
     private TextInputEditText editText_description;
@@ -59,7 +59,7 @@ public class NewCategoryActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_category);
+        setContentView(R.layout.activity_edit_category);
 
         ActionBar actionBar = getSupportActionBar();
         Intent intent = getIntent();
