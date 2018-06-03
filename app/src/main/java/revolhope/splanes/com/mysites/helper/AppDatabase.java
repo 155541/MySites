@@ -5,10 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -286,6 +284,14 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 // ============================================================================
 //                                    UPDATES
 // ============================================================================
+
+    @Override
+    public void updateCategories(List<Category> categories, OnUpdate callback)
+    {
+        UpdateCategoryAsync async = new UpdateCategoryAsync(this.getWritableDatabase(), callback);
+        async.execute(categories.toArray(new Category[0]));
+    }
+
 
 // ============================================================================
 //                                    REMOVES
@@ -1026,6 +1032,48 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     //-------------------------------------------------------------------//
     //                               UPDATES                             //
     //-------------------------------------------------------------------//
+
+    private static class UpdateCategoryAsync extends AsyncTask<Category, Void, Boolean>
+    {
+        private OnUpdate callback;
+        private SQLiteDatabase db;
+
+        private UpdateCategoryAsync(SQLiteDatabase db, OnUpdate callback)
+        {
+            this.callback = callback;
+            this.db = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Category... categories)
+        {
+            ContentValues values = new ContentValues();
+            for (Category category : categories)
+            {
+
+
+                values.put(CATEGORY_ID, category.getId());
+                values.put(CATEGORY_NAME, category.getName());
+                values.put(CATEGORY_COLOR, category.getColor().getId());
+                values.put(CATEGORY_ICON, category.getIcon().getId());
+                values.put(CATEGORY_DESCRIPTION, category.getDescription());
+
+                if (db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = ?", new String[]{ category.getId() }) != 1)
+                {
+                    //TODO: db.close();
+                    return false;
+                }
+            }
+            //TODO: db.close();
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean)
+        {
+            callback.update(aBoolean);
+        }
+    }
 
     //-------------------------------------------------------------------//
     //                               REMOVES                             //

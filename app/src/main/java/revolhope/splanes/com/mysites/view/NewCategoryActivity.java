@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,9 +24,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -51,6 +52,9 @@ public class NewCategoryActivity extends AppCompatActivity {
     private List<Color> mColors;
     private List<Icon> mIcons;
 
+    private boolean isNew;
+    private Category categoryToUpdate;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -58,18 +62,43 @@ public class NewCategoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_category);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null)
-        {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle("New category");
-            actionBar.setSubtitle("");
-        }
+        Intent intent = getIntent();
 
         editText_name = findViewById(R.id.editText_catgoryName);
         editText_description = findViewById(R.id.editText_categoryDescription);
         imageView_icon = findViewById(R.id.imageView_category_icon);
         imageView_color = findViewById(R.id.imageView_category_color);
         imageView_color.setImageDrawable(getDrawable(R.drawable.baseline_fiber_manual_record_24));
+
+        Button buttonDone = findViewById(R.id.button_done);
+
+        if (intent != null && intent.hasExtra(Constants.EXTRA_CATEGORY) && actionBar != null)
+        {
+            categoryToUpdate = (Category) intent.getSerializableExtra(Constants.EXTRA_CATEGORY);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("Update category");
+            actionBar.setSubtitle("");
+
+            editText_name.setText(categoryToUpdate.getName());
+            editText_description.setText(categoryToUpdate.getDescription());
+
+            imageView_icon.setImageDrawable(getDrawable(categoryToUpdate.getIcon().getResource()));
+            imageView_icon.setTag(categoryToUpdate.getIcon().getId());
+            imageView_color.setImageTintList(ColorStateList.valueOf(getColor(categoryToUpdate.getColor().getResource())));
+            imageView_color.setTag(categoryToUpdate.getColor().getId());
+
+            buttonDone.setText(R.string.button_new_category_update);
+
+            isNew = false;
+        }
+        else if (actionBar != null)
+        {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("New category");
+            actionBar.setSubtitle("");
+
+            isNew = true;
+        }
 
         dao = AppDatabase.getInstance(this);
 
@@ -190,7 +219,7 @@ public class NewCategoryActivity extends AppCompatActivity {
                 }
             });
         
-        findViewById(R.id.button_done)
+        buttonDone
             .setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -203,31 +232,67 @@ public class NewCategoryActivity extends AppCompatActivity {
                         String icon = (String) imageView_icon.getTag();
                         String color = (String) imageView_color.getTag();
 
-                        List<Category> list = new ArrayList<>();
-                        list.add(new Category(name, new Icon(icon, 0), new Color(color, 0), description));
+                        if (isNew)
+                        {
+                            List<Category> list = new ArrayList<>();
+                            list.add(new Category(name, new Icon(icon, 0), new Color(color, 0), description));
+                            dao.insertCategories(list, new AppDatabase.OnInsert() {
+                                @Override
+                                public void insert(final boolean result) {
 
-                        dao.insertCategories(list, new AppDatabase.OnInsert() {
-                            @Override
-                            public void insert(final boolean result) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String msg1 = "Category " + name + " added!";
+                                            String msg2 = "Oops, there were troubles while creating category..\n.try again later";
+                                            if (result)
+                                            {
+                                                Toast.makeText(getApplicationContext(), msg1, Toast.LENGTH_LONG).show();
+                                                finish();
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(getApplicationContext(), msg2, Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        else
+                        {
+                            List<Category> list = new ArrayList<>();
+                            categoryToUpdate.setName(name);
+                            categoryToUpdate.setDescription(description);
+                            categoryToUpdate.setIcon(new Icon(icon, 0));
+                            categoryToUpdate.setColor(new Color(color, 0));
 
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        String msg1 = "Category " + name + " added!";
-                                        String msg2 = "Oops, there were troubles while creating category..\n.try again later";
-                                        if (result)
-                                        {
-                                            Toast.makeText(getApplicationContext(), msg1, Toast.LENGTH_LONG).show();
-                                            finish();
+                            list.add(categoryToUpdate);
+                            dao.updateCategories(list, new AppDatabase.OnUpdate()
+                            {
+                                @Override
+                                public void update(final boolean result)
+                                {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String msg1 = "Category " + name + " updated!";
+                                            String msg2 = "Oops, there were troubles while updating category..\n.try again later";
+                                            if (result)
+                                            {
+                                                Toast.makeText(getApplicationContext(), msg1, Toast.LENGTH_LONG).show();
+                                                finish();
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(getApplicationContext(), msg2, Toast.LENGTH_LONG).show();
+                                            }
                                         }
-                                        else
-                                        {
-                                            Toast.makeText(getApplicationContext(), msg2, Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-                                });
-                            }
-                        });
+                                    });
+                                }
+                            });
+                        }
+
                     }
                 }
             });

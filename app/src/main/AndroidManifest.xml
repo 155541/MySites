@@ -23,10 +23,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.NewCategoryActivity" />
+
         <activity
             android:name=".view.CategoryActivity"
-            android:label="@string/title_activity_category"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>

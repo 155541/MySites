@@ -150,8 +150,8 @@ public class ContentActivity extends AppCompatActivity
                 }
             });
             prefs.edit().putBoolean("firstrun", false).apply();
+            System.out.println(" :......: POPULATE DATABASE :......: ");
         }
-
 
         dao.getCategories(new AppDatabase.OnSelectMap<Category, Integer>()
         {

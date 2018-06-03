@@ -32,4 +32,7 @@ public interface AppDatabaseDao
     void insertItems(List<Item> items, String categoryId, AppDatabase.OnInsert callback);
     void insertTags(List<Tag> tags, String itemId, AppDatabase.OnInsert callback);
     void bindTags(List<String> tagsId, String itemId, AppDatabase.OnInsert callback);
+
+    // UPDATES
+    void updateCategories(List<Category> categories, AppDatabase.OnUpdate callback);
 }
