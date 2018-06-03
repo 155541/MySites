@@ -3,9 +3,10 @@ package revolhope.splanes.com.mysites.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Category
+public class Category implements Serializable
 {
     private String id;
     private String name;

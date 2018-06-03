@@ -23,10 +23,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
     private Context context;
     private LayoutInflater inflater;
     private Map<Category, Integer> categories;
+    private OnHolderClick callback;
 
-    public CategoryAdapter(Context context)
+    public CategoryAdapter(Context context, OnHolderClick callback)
     {
         this.context = context;
+        this.callback = callback;
         inflater = LayoutInflater.from(context);
     }
 
@@ -97,6 +99,25 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Holder
             description = view.findViewById(R.id.textView_category_description);
             count = view.findViewById(R.id.textView_category_items_count);
             icon = view.findViewById(R.id.imageView_category_icon);
+
+            view.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    int position = getAdapterPosition();
+                    if (position < categories.size())
+                    {
+                        Category category = categories.keySet().toArray(new Category[0])[getAdapterPosition()];
+                        callback.onClick(category);
+                    }
+                }
+            });
         }
+    }
+
+    public interface OnHolderClick
+    {
+        void onClick(Category category);
     }
 }

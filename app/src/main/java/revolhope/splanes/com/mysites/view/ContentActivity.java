@@ -25,6 +25,7 @@ import revolhope.splanes.com.mysites.R;
 import revolhope.splanes.com.mysites.controller.CategoryAdapter;
 import revolhope.splanes.com.mysites.helper.AppDatabase;
 import revolhope.splanes.com.mysites.helper.AppDatabaseDao;
+import revolhope.splanes.com.mysites.helper.Constants;
 import revolhope.splanes.com.mysites.model.Category;
 
 public class ContentActivity extends AppCompatActivity
@@ -50,7 +51,16 @@ public class ContentActivity extends AppCompatActivity
         }
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        adapter = new CategoryAdapter(this);
+        adapter = new CategoryAdapter(this, new CategoryAdapter.OnHolderClick()
+        {
+            @Override
+            public void onClick(Category category)
+            {
+                Intent i = new Intent(getApplicationContext(), CategoryActivity.class);
+                i.putExtra(Constants.EXTRA_CATEGORY, category);
+                startActivity(i);
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
@@ -158,4 +168,6 @@ public class ContentActivity extends AppCompatActivity
             }
         });
     }
+
+
 }

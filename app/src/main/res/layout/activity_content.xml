@@ -48,7 +48,7 @@
                 android:layout_marginStart="8dp"
                 android:text="@string/prompt_new_category"
                 android:textSize="22sp"
-                android:drawableStart="@drawable/drawable_picked_color"
+                android:drawableStart="@drawable/ic_add_circle"
                 android:drawablePadding="16dp"
                 android:drawableTint="@color/colorPrimary"/>
 
