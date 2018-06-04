@@ -36,7 +36,11 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.Holder>
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position)
     {
-
+        if (tagList != null && position > tagList.size())
+        {
+            Tag tag = tagList.get(position);
+            holder.tagName.setText(tag.getName());
+        }
     }
 
     @Override
@@ -61,10 +65,11 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.Holder>
 
     class Holder extends RecyclerView.ViewHolder
     {
-
+        private TextView tagName;
         private Holder(View view)
         {
             super(view);
+            tagName = findViewById(R.id.textView_tag);
         }
     }
 }
