@@ -30,4 +30,6 @@
     <string name="prompt_mandatory">Mandatory</string>
     <string name="prompt_optional">Optional</string>
     <string name="prompt_tags">Tags</string>
+    <string name="prompt_no_tags_selected">No tags selected</string>
+    <string name="hint_create_your_tag">Create your tag...</string>
 </resources>

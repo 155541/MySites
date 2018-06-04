@@ -3,6 +3,7 @@ package revolhope.splanes.com.mysites.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,10 +17,11 @@ public class Item
     private String mail;
     private String notes;
     private String ubication;
+    private List<Tag> tags;
 
     public Item(@NonNull String id, @NonNull String name, @Nullable String phone,
                 @Nullable String location, @Nullable String web, @Nullable String mail,
-                @Nullable String notes, @Nullable String ubication) {
+                @Nullable String notes, @Nullable String ubication, @Nullable List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.phone = phone;
@@ -28,11 +30,16 @@ public class Item
         this.mail = mail;
         this.notes = notes;
         this.ubication = ubication;
+        this.tags = tags;
+        if (this.tags == null)
+        {
+            this.tags = new ArrayList<>();
+        }
     }
 
     public Item(@NonNull String name, @Nullable String phone, @Nullable String location,
                 @Nullable String web, @Nullable String mail, @Nullable String notes,
-                @Nullable String ubication) {
+                @Nullable String ubication, @Nullable List<Tag> tags) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.phone = phone;
@@ -41,6 +48,11 @@ public class Item
         this.mail = mail;
         this.notes = notes;
         this.ubication = ubication;
+        this.tags = tags;
+        if (this.tags == null)
+        {
+            this.tags = new ArrayList<>();
+        }
     }
 
     public String getId() {
@@ -105,5 +117,13 @@ public class Item
 
     public void setUbication(String ubication) {
         this.ubication = ubication;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 }

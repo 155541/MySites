@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.Holder>
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position)
     {
-        if (tagList != null && position > tagList.size())
+        if (tagList != null && position < tagList.size())
         {
             Tag tag = tagList.get(position);
             holder.tagName.setText(tag.getName());
@@ -69,7 +70,7 @@ public class TagAdapter extends RecyclerView.Adapter<TagAdapter.Holder>
         private Holder(View view)
         {
             super(view);
-            tagName = findViewById(R.id.textView_tag);
+            tagName = view.findViewById(R.id.textView_tag);
         }
     }
 }

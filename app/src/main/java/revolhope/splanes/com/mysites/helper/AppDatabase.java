@@ -471,11 +471,33 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 if (db.insert(TABLE_ITEM, null, values) == -1 ||
                         db.insert(TABLE_LINK_ITEM_CATEGORY, null, valuesLink) == -1)
                 {
-                    //TODO: db.close();
                     return false;
                 }
+
+                String query = "SELECT * FROM " + TABLE_TAG + " WHERE " + TAG_ID + " = ?";
+                for (Tag tag : item.getTags())
+                {
+                    ContentValues values1 = new ContentValues(2);
+                    values1.put(LINK_ITEM_TAG_ID_ITEM, item.getId());
+                    values1.put(LINK_ITEM_TAG_ID_TAG, tag.getId());
+                    long l1 = db.insert(TABLE_LINK_ITEM_TAG, null, values1);
+                    long l2 = 0;
+                    try (Cursor cursor = db.rawQuery(query, new String[]{ tag.getId() }))
+                    {
+                        if (cursor != null && cursor.getCount() == 0)
+                        {
+                            ContentValues values2 = new ContentValues();
+                            values2.put(TAG_NAME, tag.getName());
+                            values2.put(TAG_ID, tag.getId());
+                            l2 = db.insert(TABLE_TAG, null, values2);
+                        }
+                    }
+                    if (l1 == -1 || l2 == -1)
+                    {
+                        return false;
+                    }
+                }
             }
-            //TODO: db.close();
             return true;
         }
 
@@ -736,6 +758,10 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         {
 
             String query = "SELECT * FROM " + TABLE_ITEM;
+            String query2 = "SELECT * FROM " + TABLE_TAG + " tag" +
+                    " LEFT JOIN " + TABLE_LINK_ITEM_TAG + " link ON tag." + TAG_ID + " = link." + LINK_ITEM_TAG_ID_TAG +
+                    " WHERE link." + LINK_ITEM_TAG_ID_ITEM + " = ?";
+
 
             try (Cursor cursor = db.rawQuery(query, null))
             {
@@ -745,6 +771,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     do
                     {
                         String id, name, phone, mail, web, location, notes, ubication;
+                        List<Tag> tags = new ArrayList<>();
 
                         id = cursor.getString(cursor.getColumnIndex(ITEM_ID));
                         name = cursor.getString(cursor.getColumnIndex(ITEM_NAME));
@@ -755,7 +782,23 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         notes = cursor.getString(cursor.getColumnIndex(ITEM_NOTES));
                         ubication = cursor.getString(cursor.getColumnIndex(ITEM_UBICATION));
 
-                        list.add(new Item(id, name, phone, location, web, mail, notes, ubication));
+                        try (Cursor cursor1 = db.rawQuery(query2, new String[]{ id }))
+                        {
+                            if (cursor1 != null && cursor1.moveToFirst())
+                            {
+                                do
+                                {
+                                    String idTag, nameTag;
+
+                                    idTag = cursor1.getString(cursor1.getColumnIndex(TAG_ID));
+                                    nameTag = cursor1.getString(cursor1.getColumnIndex(TAG_NAME));
+                                    tags.add(new Tag(idTag, nameTag));
+
+                                } while (cursor1.moveToNext());
+                            }
+                        }
+
+                        list.add(new Item(id, name, phone, location, web, mail, notes, ubication, tags));
                     }
                     while(cursor.moveToNext());
                     //TODO: db.close();
@@ -847,6 +890,10 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     " SELECT * FROM " + TABLE_ITEM + " i LEFT JOIN "
                     + TABLE_LINK_ITEM_CATEGORY + "link ON  i." + ITEM_ID + " = link." + LINK_ITEM_CATEGORY_ID_ITEM
                     + " WHERE link." + LINK_ITEM_CATEGORY_ID_CATEGORY + " = ?";
+            String query2 = "SELECT * FROM " + TABLE_TAG + " tag" +
+                    " LEFT JOIN " + TABLE_LINK_ITEM_TAG + " link ON tag." + TAG_ID + " = link." + LINK_ITEM_TAG_ID_TAG +
+                    " WHERE link." + LINK_ITEM_TAG_ID_ITEM + " = ?";
+
 
             try (Cursor cursor = db.rawQuery(query, new String[]{ categoryId }))
             {
@@ -856,6 +903,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     do
                     {
                         String id, name, phone, mail, web, location, notes, ubication;
+                        List<Tag> tags = new ArrayList<>();
 
                         id = cursor.getString(cursor.getColumnIndex(ITEM_ID));
                         name = cursor.getString(cursor.getColumnIndex(ITEM_NAME));
@@ -866,15 +914,29 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         notes = cursor.getString(cursor.getColumnIndex(ITEM_NOTES));
                         ubication = cursor.getString(cursor.getColumnIndex(ITEM_UBICATION));
 
-                        list.add(new Item(id, name, phone, location, web, mail, notes, ubication));
+                        try (Cursor cursor1 = db.rawQuery(query2, new String[]{ id }))
+                        {
+                            if (cursor1 != null && cursor1.moveToFirst())
+                            {
+                                do
+                                {
+                                    String idTag, nameTag;
+
+                                    idTag = cursor1.getString(cursor1.getColumnIndex(TAG_ID));
+                                    nameTag = cursor1.getString(cursor1.getColumnIndex(TAG_NAME));
+                                    tags.add(new Tag(idTag, nameTag));
+
+                                } while (cursor1.moveToNext());
+                            }
+                        }
+
+                        list.add(new Item(id, name, phone, location, web, mail, notes, ubication, tags));
                     }
                     while(cursor.moveToNext());
-                    //TODO: db.close();
                     return list;
                 }
                 else
                 {
-                    //TODO: db.close();
                     return null;
                 }
             }

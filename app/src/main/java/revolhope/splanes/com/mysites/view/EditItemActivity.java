@@ -1,29 +1,48 @@
 package revolhope.splanes.com.mysites.view;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import revolhope.splanes.com.mysites.R;
+import revolhope.splanes.com.mysites.controller.TagAdapter;
 import revolhope.splanes.com.mysites.helper.AppDatabase;
 import revolhope.splanes.com.mysites.helper.AppDatabaseDao;
 import revolhope.splanes.com.mysites.helper.Constants;
 import revolhope.splanes.com.mysites.model.Category;
 import revolhope.splanes.com.mysites.model.Item;
+import revolhope.splanes.com.mysites.model.Tag;
 
 public class EditItemActivity extends AppCompatActivity
 {
@@ -36,15 +55,14 @@ public class EditItemActivity extends AppCompatActivity
     private TextInputEditText editText_notes;
 
     private RecyclerView recyclerViewTags;
-
     private ImageView imageView_ubication;
-    private Button button_done;
+    private TextView textView_noTags;
 
-    private ImageView imageView_categoryIcon;
+
     private Category currCategory;
-    private Item itemToUpdate;
+    private List<Tag> tags;
+    private TagAdapter adapter;
     private boolean isNew;
-
     private AppDatabaseDao dao;
 
     @Override
@@ -70,18 +88,21 @@ public class EditItemActivity extends AppCompatActivity
 
         recyclerViewTags = findViewById(R.id.recyclerView);
         recyclerViewTags.setLayoutManager(new GridLayoutManager(this, 3));
-        TagAdapter adapter = new TagAdapter(this);
+        adapter = new TagAdapter(this);
         recyclerViewTags.setAdapter(adapter);
-        
-        button_done = findViewById(R.id.button_done);
 
-        imageView_categoryIcon = findViewById(R.id.imageView_category_icon);
+        Button button_done = findViewById(R.id.button_done);
+        ImageView imageView_categoryIcon = findViewById(R.id.imageView_category_icon);
 
+        textView_noTags = findViewById(R.id.textView_noTags);
+
+        recyclerViewTags.setVisibility(View.GONE);
+        textView_noTags.setVisibility(View.VISIBLE);
 
         if (intent != null && intent.hasExtra(Constants.EXTRA_CATEGORY) && intent.hasExtra(Constants.EXTRA_ITEM) && actionBar != null)
         {
             currCategory = (Category) intent.getSerializableExtra(Constants.EXTRA_CATEGORY);
-            itemToUpdate = (Item) intent.getSerializableExtra(Constants.EXTRA_ITEM);
+            Item itemToUpdate = (Item) intent.getSerializableExtra(Constants.EXTRA_ITEM);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle("Update Site");
 
@@ -92,12 +113,32 @@ public class EditItemActivity extends AppCompatActivity
             editText_web.setText(itemToUpdate.getWeb());
             editText_notes.setText(itemToUpdate.getNotes());
 
-            // recyclerViewTags ------------------------------------------->
-
             CoordinatorLayout layout = findViewById(R.id.constraintLayout);
             layout.setBackgroundColor(getColor(currCategory.getColor().getResource()));
             imageView_categoryIcon.setImageDrawable(getDrawable(currCategory.getIcon().getResource()));
             button_done.setText(R.string.button_new_item_update);
+
+            dao.getTagsByItem(itemToUpdate.getId(), new AppDatabase.OnSelect<Tag>()
+            {
+                @Override
+                public void select(final List<Tag> selection)
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (selection != null && !selection.isEmpty())
+                            {
+                                recyclerViewTags.setVisibility(View.VISIBLE);
+                                textView_noTags.setVisibility(View.GONE);
+                                tags = selection;
+                                adapter.setTags(selection);
+                            }
+                        }
+                    });
+                }
+            });
 
             isNew = false;
         }
@@ -108,6 +149,7 @@ public class EditItemActivity extends AppCompatActivity
             actionBar.setTitle("New " + currCategory.getName());
 
             imageView_categoryIcon.setImageDrawable(getDrawable(currCategory.getIcon().getResource()));
+            tags = new ArrayList<>();
             isNew = true;
         }
 
@@ -118,12 +160,111 @@ public class EditItemActivity extends AppCompatActivity
             {
                 if (checkFields())
                 {
+                    List<Item> list = new ArrayList<>();
 
+                    Item item = new Item(
+                            editText_name.getText().toString(),
+                            editText_phone.getText().toString(),
+                            editText_location.getText().toString(),
+                            editText_web.getText().toString(),
+                            editText_email.getText().toString(),
+                            editText_notes.getText().toString(),
+                            null, // TODO: TAKE A LOOK! -> STILL IMPLEMENT
+                            tags);
+                    list.add(item);
+
+                    if (isNew)
+                    {
+                        dao.insertItems(list, currCategory.getId(), new AppDatabase.OnInsert()
+                        {
+                            @Override
+                            public void insert(final boolean result)
+                            {
+                                runOnUiThread(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        String msg = result ? "Site added!" : "Oops, we've got some troubles while adding site..\nTry again later..";
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else
+                    {
+                        // TODO: TAKE A LOOK! -> STILL IMPLEMENT
+                    }
                 }
-                else
+            }
+        });
+
+        findViewById(R.id.imageView_item_add_tag).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                dao.getTags(new AppDatabase.OnSelect<Tag>()
                 {
+                    @Override
+                    public void select(final List<Tag> selection)
+                    {
+                        runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                AddTagDialog dialog = new AddTagDialog();
+                                dialog.allTags = selection;
+                                dialog.callback = new AddTagDialog.OnAddTag()
+                                {
+                                    @Override
+                                    public void add(Tag tag)
+                                    {
+                                        tags.add(tag);
+                                        runOnUiThread(new Runnable()
+                                        {
+                                            @Override
+                                            public void run()
+                                            {
+                                                adapter.setTags(tags);
+                                                recyclerViewTags.setVisibility(View.VISIBLE);
+                                                textView_noTags.setVisibility(View.GONE);
+                                            }
+                                        });
+                                    }
+                                };
+                                dialog.show(getSupportFragmentManager(), "AddTagDialog");
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
-                }
+        findViewById(R.id.imageView_item_remove_tag).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                RemoveTagDialog dialog = new RemoveTagDialog();
+                dialog.itemTags = tags;
+                dialog.callback = new RemoveTagDialog.OnRemoveTag()
+                {
+                    @Override
+                    public void remove(List<Tag> toDelete)
+                    {
+                        tags.removeAll(toDelete);
+                        adapter.setTags(tags);
+                        if (tags.isEmpty())
+                        {
+                            recyclerViewTags.setVisibility(View.GONE);
+                            textView_noTags.setVisibility(View.VISIBLE);
+                        }
+                    }
+                };
+                dialog.show(getSupportFragmentManager(), "RemoveTagDialog");
             }
         });
     }
@@ -133,7 +274,12 @@ public class EditItemActivity extends AppCompatActivity
     {
         super.onResume();
 
-
+        if (tags != null && !tags.isEmpty())
+        {
+            recyclerViewTags.setVisibility(View.VISIBLE);
+            textView_noTags.setVisibility(View.GONE);
+            adapter.setTags(tags);
+        }
     }
 
     private boolean checkFields()
@@ -186,5 +332,174 @@ public class EditItemActivity extends AppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static class AddTagDialog extends DialogFragment
+    {
+        private List<Tag> allTags;
+        private OnAddTag callback;
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState)
+        {
+            final Context context = getContext();
+            Activity activity = getActivity();
+
+            if(allTags == null)
+            {
+                allTags = new ArrayList<>();
+            }
+
+            if (context != null && activity != null)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                ViewGroup viewGroup = activity.findViewById(android.R.id.content);
+
+                View view = LayoutInflater.from(context).inflate(R.layout.dialog_add_item, viewGroup, false);
+
+                final AutoCompleteTextView autoCompleteTextView = view.findViewById(R.id.autoCompleteTextView_tag);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.select_dialog_item, getTags());
+
+                autoCompleteTextView.setThreshold(1);
+                autoCompleteTextView.setAdapter(adapter);
+
+                Spannable spannable = new SpannableString("Add Tag");
+                spannable.setSpan(new ForegroundColorSpan(context.getColor(R.color.colorPrimary)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                builder.setTitle(spannable);
+                builder.setView(view);
+                builder.setPositiveButton("Add", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        String tagName = autoCompleteTextView.getText().toString();
+                        if (!tagName.isEmpty())
+                        {
+                            tagName = "# " + tagName;
+                            for (Tag tag : allTags)
+                            {
+                                if (tag.getName().equals(tagName))
+                                {
+                                    callback.add(tag);
+                                    return;
+                                }
+                            }
+                            callback.add(new Tag(tagName));
+                        }
+                        else
+                        {
+                            Toast.makeText(context, "Tag name is mandatory", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder.setNegativeButton("Back", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {}
+                });
+
+
+                return builder.create();
+            }
+
+            return super.onCreateDialog(savedInstanceState);
+        }
+
+        private String[] getTags()
+        {
+            String[] result = new String[allTags.size()];
+            int i = 0;
+            for (Tag tag : allTags)
+            {
+                result[i] = tag.getName();
+                i++;
+            }
+            return result;
+        }
+
+        private interface OnAddTag
+        {
+            void add(Tag tag);
+        }
+    }
+
+    public static class RemoveTagDialog extends DialogFragment
+    {
+        private List<Tag> itemTags;
+        private List<Tag> toDelete;
+        private OnRemoveTag callback;
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            Context context = getContext();
+            if (context != null && itemTags != null)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                toDelete = new ArrayList<>();
+
+                Spannable spannable = new SpannableString("Remove Tags");
+                spannable.setSpan(new ForegroundColorSpan(context.getColor(R.color.colorPrimary)), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                builder.setTitle(spannable);
+                builder.setMultiChoiceItems(getTags(), null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean checked)
+                    {
+                        Tag tag = itemTags.get(i);
+                        if (checked)
+                        {
+                            if (!toDelete.contains(tag))
+                            {
+                                toDelete.add(tag);
+                            }
+                        }
+                        else
+                        {
+                            toDelete.remove(tag);
+                        }
+                    }
+                });
+
+                builder.setPositiveButton("Remove", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        callback.remove(toDelete);
+                    }
+                });
+
+                builder.setNegativeButton("back", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {}
+                });
+
+                return builder.create();
+            }
+            return super.onCreateDialog(savedInstanceState);
+        }
+
+        private String[] getTags()
+        {
+            String[] result = new String[itemTags.size()];
+            int i = 0;
+            for (Tag tag : itemTags)
+            {
+                result[i] = tag.getName();
+                i++;
+            }
+            return result;
+        }
+
+        private interface OnRemoveTag
+        {
+            void remove(List<Tag> toDelete);
+        }
     }
 }
