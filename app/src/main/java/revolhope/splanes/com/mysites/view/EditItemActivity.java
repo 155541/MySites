@@ -125,13 +125,52 @@ public class EditItemActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+
+    }
+
     private boolean checkFields()
     {
-        boolean ok = true;
+        String str = editText_name.getText().toString();
 
+        if (str.isEmpty())
+        {
+            editText_name.setError("Name field is mandatory");
+            editText_name.requestFocus();
+            return false;
+        }
+        else
+        {
+            editText_name.setError(null);
+        }
 
+        str = editText_phone.getText().toString();
 
-        return ok;
+        if (str.isEmpty())
+        {
+            editText_phone.setError("Phone field is mandatory");
+            editText_phone.requestFocus();
+            return false;
+        }
+
+        str = editText_notes.getText().toString();
+
+        if (str.length() > 75)
+        {
+            editText_notes.setError("Length must not be longer than 75 characters");
+            editText_notes.requestFocus();
+            return false;
+        }
+        else
+        {
+            editText_notes.setError(null);
+        }
+
+        return true;
     }
 
     @Override

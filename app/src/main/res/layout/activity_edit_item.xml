@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/promp_item_name_mandatory"
                     android:inputType="textCapSentences"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"/>
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -77,7 +77,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/promp_item_phone_mandatory"
-                    android:inputType="textCapSentences"
+                    android:inputType="phone"
                     android:textSize="18sp" />
             </android.support.design.widget.TextInputLayout>
 
@@ -113,7 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/promp_item_email"
-                    android:inputType="textCapSentences"
+                    android:inputType="textEmailAddress"
                     android:textSize="18sp" />
             </android.support.design.widget.TextInputLayout>
 
@@ -127,14 +127,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/promp_item_web"
-                    android:inputType="textCapSentences"
+                    android:inputType="textWebEditText"
                     android:textSize="18sp" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp">
+                android:padding="4dp"
+                app:counterEnabled="true"
+                app:counterMaxLength="75">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/editText_itemNotes"
@@ -158,7 +160,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+                <ImageView
+                    android:id="@+id/imageView_item_add_tag"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:src="@drawable/baseline_remove_circle_outline_black_18dp"
+                    android:tint="@color/colorAccent"
+                    android:alpha=".65"/>
+
+                <ImageView
+                    android:id="@+id/imageView_item_remove_tag"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:contentDescription="@string/contentDescription"
+                    android:src="@drawable/ic_add_circle"
+                    android:tint="@color/colorAccent"
+                    android:alpha=".65"/>
+
+            </LinearLayout>
             
             <TextView
                 android:id="@+id/textView_ubication"
