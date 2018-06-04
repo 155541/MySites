@@ -4,14 +4,18 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import revolhope.splanes.com.mysites.R;
@@ -85,8 +89,10 @@ public class EditItemActivity extends AppCompatActivity
             editText_web.setText(itemToUpdate.getWeb());
             editText_notes.setText(itemToUpdate.getNotes());
 
-            //editText_name.setText(itemToUpdate.getName()); ------> TAGS
+            // recyclerViewTags ------------------------------------------->
 
+            CoordinatorLayout layout = findViewById(R.id.constraintLayout);
+            layout.setBackgroundColor(getColor(currCategory.getColor().getResource()));
             imageView_categoryIcon.setImageDrawable(getDrawable(currCategory.getIcon().getResource()));
             button_done.setText(R.string.button_new_item_update);
 
@@ -101,5 +107,42 @@ public class EditItemActivity extends AppCompatActivity
             imageView_categoryIcon.setImageDrawable(getDrawable(currCategory.getIcon().getResource()));
             isNew = true;
         }
+
+        button_done.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                if (checkFields())
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+        });
+    }
+
+    private boolean checkFields()
+    {
+        boolean ok = true;
+
+
+
+        return ok;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == android.R.id.home)
+        {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
