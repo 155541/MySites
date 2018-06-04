@@ -69,7 +69,10 @@ public class EditItemActivity extends AppCompatActivity
         editText_notes = findViewById(R.id.editText_itemNotes);
 
         recyclerViewTags = findViewById(R.id.recyclerView);
-
+        recyclerViewTags.setLayoutManager(new GridLayoutManager(this, 3));
+        TagAdapter adapter = new TagAdapter(this);
+        recyclerViewTags.setAdapter(adapter);
+        
         button_done = findViewById(R.id.button_done);
 
         imageView_categoryIcon = findViewById(R.id.imageView_category_icon);
