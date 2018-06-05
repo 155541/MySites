@@ -2,6 +2,7 @@ package revolhope.splanes.com.mysites.controller;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import revolhope.splanes.com.mysites.R;
+import revolhope.splanes.com.mysites.helper.FlipAnimator;
 import revolhope.splanes.com.mysites.model.Item;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
@@ -94,6 +96,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
 
     class Holder extends RecyclerView.ViewHolder
     {
+        private CardView frontView;
+        private CardView backView;
+
         private LinearLayout linearLayout_call;
         private TextView textView_name;
         private TextView textView_web;
@@ -115,7 +120,14 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                 @Override
                 public void onClick(View view)
                 {
-
+                    if (!isSwapped)
+                    {
+                        FlipAnimator.flip(context, frontView, backView);
+                    }
+                    else
+                    {
+                        FlipAnimator.flipBack(context, frontView, backView);
+                    }
                 }
             });
 
