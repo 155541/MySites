@@ -14,6 +14,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -29,14 +31,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import revolhope.splanes.com.mysites.R;
+import revolhope.splanes.com.mysites.controller.ItemAdapter;
 import revolhope.splanes.com.mysites.helper.AppBarStateChangeListener;
 import revolhope.splanes.com.mysites.helper.AppDatabase;
 import revolhope.splanes.com.mysites.helper.AppDatabaseDao;
 import revolhope.splanes.com.mysites.helper.Constants;
 import revolhope.splanes.com.mysites.model.Category;
+import revolhope.splanes.com.mysites.model.Item;
 
 public class CategoryActivity extends AppCompatActivity {
 
+    private ItemAdapter itemAdapter;
     private AppDatabaseDao dao;
     private Category currCategory;
 
@@ -92,6 +97,33 @@ public class CategoryActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        itemAdapter = new ItemAdapter(this);
+        recyclerView.setAdapter(itemAdapter);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        dao.getItems(new AppDatabase.OnSelect<Item>()
+        {
+            @Override
+            public void select(final List<Item> selection)
+            {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        itemAdapter.setItems(selection);
+                    }
+                });
+            }
+        });
+
     }
 
     @Override
