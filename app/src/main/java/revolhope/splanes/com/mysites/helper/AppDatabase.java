@@ -55,6 +55,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
     private static final String COLOR_ID = "COLOR_ID";
     private static final String COLOR_RESOURCE = "COLOR_RESOURCE";
+    private static final String COLOR_RESOURCE_BACKGROUND = "COLOR_RESOURCE_BACKGROUND";
 
     private static final String CATEGORY_ID = "CATEGORY_ID";
     private static final String CATEGORY_NAME = "CATEGORY_NAME";
@@ -94,7 +95,8 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     private static final String CREATE_TABLE_COLOR =
             "CREATE TABLE IF NOT EXISTS " + TABLE_COLOR + "("
                     + COLOR_ID + " VARCHAR PRIMARY KEY, "
-                    + COLOR_RESOURCE + " INTEGER UNIQUE)";
+                    + COLOR_RESOURCE + " INTEGER UNIQUE,"
+                    + COLOR_RESOURCE_BACKGROUND + " INTEGER UNIQUE)";
 
     private static final String CREATE_TABLE_CATEGORY =
             "CREATE TABLE IF NOT EXISTS " + TABLE_CATEGORY + "("
@@ -335,6 +337,17 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         android.R.color.holo_red_dark, android.R.color.tertiary_text_light,
                 };
 
+        private final int[] colorsBackground =
+                {
+                        R.color.resource1_background,R.color.resource2_background,
+                        R.color.resource3_background,R.color.resource4_background,
+                        R.color.resource5_background,R.color.resource6_background,
+                        R.color.resource7_background,R.color.resource8_background,
+                        R.color.resource9_background,R.color.resource10_background,
+                        android.R.color.tertiary_text_light,android.R.color.white,
+                        android.R.color.holo_red_light, R.color.resource_default_background
+                };
+
         private final int[] drawablesRes =
                 {
                         R.drawable.resource1_fastfood_24, R.drawable.resource2_hotel_24,
@@ -355,13 +368,15 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         @Override
         protected Boolean doInBackground(Void... voids)
         {
-            ContentValues values= new ContentValues();
+            ContentValues values = new ContentValues();
 
             // COLORS
-            for (int color : colors)
+            int size = colors.length;
+            for (int i = 0; i< size ; i++)
             {
                 values.put(COLOR_ID, UUID.randomUUID().toString());
-                values.put(COLOR_RESOURCE, color);
+                values.put(COLOR_RESOURCE, colors[i]);
+                values.put(COLOR_RESOURCE_BACKGROUND, colorsBackground[i]);
                 if (db.insert(TABLE_COLOR, null, values) == -1)
                 {
                     //TODO: db.close();
@@ -617,6 +632,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                             " ic." + ICON_RESOURCE + "," +
                             " co." + COLOR_ID + "," +
                             " co." + COLOR_RESOURCE + "," +
+                            " co." + COLOR_RESOURCE_BACKGROUND + "," +
                             " cat." + CATEGORY_DESCRIPTION + "," +
                             " COUNT( link."+ LINK_ITEM_CATEGORY_ID_ITEM + ")" +
                             " FROM " + TABLE_CATEGORY + " cat " +
@@ -634,7 +650,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     do
                     {
                         String id, name, description, colorId, iconId;
-                        int colorRes, iconRes, itemCounts;
+                        int colorRes, colorBackRes, iconRes, itemCounts;
 
                         id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
                         name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
@@ -642,10 +658,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         colorId = cursor.getString(cursor.getColumnIndex(COLOR_ID));
                         iconRes = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
                         colorRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
+                        colorBackRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE_BACKGROUND));
                         description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
                         itemCounts = cursor.getInt(cursor.getColumnCount()-1);
 
-                        Category cat = new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description);
+                        Category cat = new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes, colorBackRes), description);
                         map.put(cat, itemCounts);
                     }
                     while(cursor.moveToNext());
@@ -691,6 +708,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                             " ic." + ICON_RESOURCE + "," +
                             " co." + COLOR_ID + "," +
                             " co." + COLOR_RESOURCE + "," +
+                            " co." + COLOR_RESOURCE_BACKGROUND + "," +
                             " cat." + CATEGORY_DESCRIPTION + "," +
                             " COUNT( link."+ LINK_ITEM_CATEGORY_ID_ITEM + ")" +
                             " FROM " + TABLE_CATEGORY + " cat " +
@@ -709,7 +727,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     do
                     {
                         String id, name, description, colorId, iconId;
-                        int colorRes, iconRes, itemCounts;
+                        int colorRes, colorBackRes, iconRes, itemCounts;
 
                         id = cursor.getString(cursor.getColumnIndex(CATEGORY_ID));
                         name = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME));
@@ -717,10 +735,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                         colorId = cursor.getString(cursor.getColumnIndex(COLOR_ID));
                         iconRes = cursor.getInt(cursor.getColumnIndex(ICON_RESOURCE));
                         colorRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
+                        colorBackRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
                         description = cursor.getString(cursor.getColumnIndex(CATEGORY_DESCRIPTION));
                         itemCounts = cursor.getInt(cursor.getColumnCount()-1);
 
-                        Category cat = new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes), description);
+                        Category cat = new Category(id, name, new Icon(iconId, iconRes), new Color(colorId, colorRes, colorBackRes), description);
                         map.put(cat, itemCounts);
                     }
                     while(cursor.moveToNext());
@@ -1028,12 +1047,12 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     do
                     {
                         String id;
-                        int resource;
+                        int resource, backgroundRes;
 
                         id = cursor.getString(cursor.getColumnIndex(COLOR_ID));
                         resource = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE));
-
-                        list.add(new Color(id, resource));
+                        backgroundRes = cursor.getInt(cursor.getColumnIndex(COLOR_RESOURCE_BACKGROUND));
+                        list.add(new Color(id, resource, backgroundRes));
                     }
                     while(cursor.moveToNext());
                     //TODO: db.close();

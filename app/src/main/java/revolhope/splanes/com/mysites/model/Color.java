@@ -7,7 +7,9 @@ import revolhope.splanes.com.mysites.helper.Constants;
 
 public class Color extends Resource
 {
-    public Color (@NonNull String id, int resource)
+    private int backgroundResource;
+
+    public Color (@NonNull String id, int resource, int backgroundResource)
     {
         this.setId(id);
         if (resource > 0)
@@ -18,6 +20,24 @@ public class Color extends Resource
         {
             this.setResource(R.color.resource_default);
         }
+        if (backgroundResource > 0)
+        {
+            this.setBackgroundResource(backgroundResource);
+        }
+        else
+        {
+            this.setBackgroundResource(R.color.resource_default_background);
+        }
         this.setType(Constants.TYPE_COLOR);
+    }
+
+    public int getBackgroundResource()
+    {
+        return backgroundResource;
+    }
+
+    public void setBackgroundResource(int backgroundResource)
+    {
+        this.backgroundResource = backgroundResource;
     }
 }

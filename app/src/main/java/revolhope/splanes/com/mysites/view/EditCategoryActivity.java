@@ -235,7 +235,7 @@ public class EditCategoryActivity extends AppCompatActivity {
                         if (isNew)
                         {
                             List<Category> list = new ArrayList<>();
-                            list.add(new Category(name, new Icon(icon, 0), new Color(color, 0), description));
+                            list.add(new Category(name, new Icon(icon, 0), new Color(color, 0,0), description));
                             dao.insertCategories(list, new AppDatabase.OnInsert() {
                                 @Override
                                 public void insert(final boolean result) {
@@ -265,7 +265,7 @@ public class EditCategoryActivity extends AppCompatActivity {
                             categoryToUpdate.setName(name);
                             categoryToUpdate.setDescription(description);
                             categoryToUpdate.setIcon(new Icon(icon, 0));
-                            categoryToUpdate.setColor(new Color(color, 0));
+                            categoryToUpdate.setColor(new Color(color, 0,0));
 
                             list.add(categoryToUpdate);
                             dao.updateCategories(list, new AppDatabase.OnUpdate()

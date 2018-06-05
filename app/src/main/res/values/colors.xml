@@ -20,4 +20,16 @@
     <color name="resource9">#f9b1f6</color>
     <color name="resource10">#f2ee68</color>
 
+    <color name="resource_default_background">#40000000</color>
+    <color name="resource1_background">#A67bd1f4</color>
+    <color name="resource2_background">#A60097dd</color>
+    <color name="resource3_background">#A6fc1808</color>
+    <color name="resource4_background">#A6fd7b00</color>
+    <color name="resource5_background">#A6ffb74c</color>
+    <color name="resource6_background">#A600b200</color>
+    <color name="resource7_background">#A6adfa9f</color>
+    <color name="resource8_background">#A6ad00d2</color>
+    <color name="resource9_background">#A6f9b1f6</color>
+    <color name="resource10_background">#A6f2ee68</color>
+
 </resources>
