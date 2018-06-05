@@ -187,6 +187,7 @@ public class EditItemActivity extends AppCompatActivity
                                     {
                                         String msg = result ? "Site added!" : "Oops, we've got some troubles while adding site..\nTry again later..";
                                         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                        finish();
                                     }
                                 });
                             }
