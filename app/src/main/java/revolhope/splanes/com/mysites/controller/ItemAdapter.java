@@ -61,9 +61,16 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
 
         if (items != null && items.size() > position)
         {
-            /*
+         
+            if (holder.isSwapped)
+            {
+            
+            }
+            else
+            {
+            }
+         
             Item item = items.get(position);
-
             holder.textView_name.setText(item.getName());
             if (item.getWeb() != null && !item.getWeb().isEmpty())
             {
@@ -103,61 +110,28 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
         }
     }
 
-
-
-    @Override
-    public int getItemViewType(int position)
-    {
-        if (position < sparseArrayIsSwapped.size())
-        {
-            if (sparseArrayIsSwapped.get(position))
-            {
-                return 1;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        else
-        {
-            return super.getItemViewType(position);
-        }
-    }
-
     public void setItems(List<Item> items)
     {
         this.items = items;
-
         notifyDataSetChanged();
     }
 
     static class Holder extends RecyclerView.ViewHolder
     {
-        private LinearLayout linearLayout_call;
-        private TextView textView_name;
-        private TextView textView_web;
-        private RecyclerView recyclerView;
-
-        private CardView viewFront;
-        private CardView viewBack;
-
+        private ItemFrontFragment frontFragment;
+        private ItemBackFragment backFragment;
         private boolean isSwapped;
 
         private Holder (View view, final Context context, final FragmentManager fragmentManager)
         {
             super(view);
             isSwapped = false;
-            linearLayout_call = view.findViewById(R.id.layout_item_call);
-            textView_name = view.findViewById(R.id.textView_item_name);
-            recyclerView = view.findViewById(R.id.recyclerView_tags);
-            textView_web = view.findViewById(R.id.textView_item_web);
 
-            viewFront = view.findViewById(R.id.cardview_front);
-            viewBack = view.findViewById(R.id.cardview_back);
-
+            frontFragment = new ItemFrontFragment();
+            backFragment = new ItemBackFragment();
+            
             fragmentManager.beginTransaction()
-                    .add(R.id.container, new ItemFrontFragment())
+                    .add(R.id.container, frontFragment)
                     .commit();
 
             view.setOnClickListener(new View.OnClickListener()
@@ -181,40 +155,44 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                                     R.animator.flip_down_out,
                                     R.animator.flip_up_in,
                                     R.animator.flip_up_out)
-                            .replace(R.id.container, new ItemBackFragment())
-
+                            .replace(R.id.container, backFragment)
                             // Add this transaction to the back stack, allowing users to press
                             // Back to get to the front of the card.
                             .addToBackStack(null)
-
-                            // Commit the transaction.
                             .commit();
                 }
             });
-
-            view.setOnLongClickListener(new View.OnLongClickListener()
-            {
-                @Override
-                public boolean onLongClick(View view)
-                {
-                    return false;
-                }
-            });
-
         }
 
         public static class ItemFrontFragment extends Fragment {
+            
+            private TextView name;
+            private TextView web;
+            private LinearLayout linearLayoutCall;
+            private RecyclerView recyclerView;
+            private TagAdapter tagAdapter;
+            
             @Override
             public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                                      Bundle savedInstanceState) {
+                
                 View view = inflater.inflate(R.layout.holder_item_content_front, container, false);
-
                 Context context = getContext();
                 if (context != null)
                 {
                     Resources res = context.getResources();
                     float scale = res.getDisplayMetrics().density * res.getInteger(R.integer.factor_scale);
                     view.setCameraDistance(scale);
+                    
+                    recyclerView = view.findViewById(R.id.recyclerView_tags);
+                    linearLayoutCall = view.findViewById(R.id.layout_item_call);
+                    name = view.findViewById(R.id.textView_item_name);
+                    web = view.findViewById(R.id.textView_item_web);
+                                        
+                    tagAdapter = new TagAdapter(context);
+                    
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                    recyclerView.setAdapter(tagAdapter);
                 }
                 return view;
             }
