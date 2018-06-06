@@ -31,5 +31,8 @@
     <string name="prompt_optional">Optional</string>
     <string name="prompt_tags">Tags</string>
     <string name="prompt_no_tags_selected">No tags selected</string>
-    <string name="hint_create_your_tag">Create your tag...</string>
+    <string name="hint_create_your_tag">Create your tag…</string>
+    <string name="prompt_no_information_notes">There are no notes</string>
+    <string name="prompt_no_information_ubication">Ubication not set</string>
+    <string name="prompt_ubication">Ubication:</string>
 </resources>

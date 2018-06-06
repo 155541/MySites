@@ -101,7 +101,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        itemAdapter = new ItemAdapter(this);
+        itemAdapter = new ItemAdapter(this, getSupportFragmentManager());
         recyclerView.setAdapter(itemAdapter);
     }
 

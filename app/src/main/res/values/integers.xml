@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="factor_scale">8500</integer>
+
+    <integer name="duration_flip_animation">400</integer>
+    <integer name="half_duration_flip_animation">200</integer>
+
+</resources>
