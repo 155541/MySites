@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -137,6 +138,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
 
     static class Holder extends RecyclerView.ViewHolder
     {
+        private int id;
+        private FrameLayout layout;
         private ItemFrontFragment frontFragment;
         private ItemBackFragment backFragment;
         private boolean isSwapped;
@@ -149,8 +152,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
             frontFragment = new ItemFrontFragment();
             backFragment = new ItemBackFragment();
 
+            id = generateId();
+            layout = view.findViewById(R.id.container);
+            layout.setId(id);
+
             fragmentManager.beginTransaction()
-                    .add(R.id.container, frontFragment, String.valueOf(getAdapterPosition()))
+                    .add(id, frontFragment, String.valueOf(getAdapterPosition()))
                     .commit();
 
             view.setOnClickListener(new View.OnClickListener()
@@ -174,13 +181,18 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                                     R.animator.flip_down_out,
                                     R.animator.flip_up_in,
                                     R.animator.flip_up_out)
-                            .replace(R.id.container, backFragment, String.valueOf(getAdapterPosition()))
+                            .replace(id, backFragment, String.valueOf(getAdapterPosition()))
                             // Add this transaction to the back stack, allowing users to press
                             // Back to get to the front of the card.
                             .addToBackStack(null)
                             .commit();
                 }
             });
+        }
+
+        private int generateId()
+        {
+            return (int)System.currentTimeMillis();
         }
 
         public static class ItemFrontFragment extends Fragment {
