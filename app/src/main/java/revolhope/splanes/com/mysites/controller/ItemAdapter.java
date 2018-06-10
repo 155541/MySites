@@ -182,8 +182,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                                     R.animator.flip_up_in,
                                     R.animator.flip_up_out)
                             .replace(id, backFragment, String.valueOf(getAdapterPosition()))
-                            // Add this transaction to the back stack, allowing users to press
-                            // Back to get to the front of the card.
                             .addToBackStack(null)
                             .commit();
                 }
@@ -194,6 +192,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
         {
             return (int)System.currentTimeMillis();
         }
+
 
         public static class ItemFrontFragment extends Fragment {
 

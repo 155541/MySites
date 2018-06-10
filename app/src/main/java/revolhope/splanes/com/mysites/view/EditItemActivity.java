@@ -163,12 +163,12 @@ public class EditItemActivity extends AppCompatActivity
                     List<Item> list = new ArrayList<>();
 
                     Item item = new Item(
-                            editText_name.getText().toString(),
-                            editText_phone.getText().toString(),
-                            editText_location.getText().toString(),
-                            editText_web.getText().toString(),
-                            editText_email.getText().toString(),
-                            editText_notes.getText().toString(),
+                            editText_name.getText().toString().trim(),
+                            editText_phone.getText().toString().trim(),
+                            editText_location.getText().toString().trim(),
+                            editText_web.getText().toString().trim(),
+                            editText_email.getText().toString().trim(),
+                            editText_notes.getText().toString().trim(),
                             null, // TODO: TAKE A LOOK! -> STILL IMPLEMENT
                             tags);
                     list.add(item);
@@ -306,6 +306,25 @@ public class EditItemActivity extends AppCompatActivity
             editText_phone.requestFocus();
             return false;
         }
+        else if(str.length() < 9)
+        {
+            editText_phone.setError("Phone must have 9 characters minimum");
+            editText_phone.requestFocus();
+            return false;
+        }
+        else
+        {
+            try
+            {
+                Integer.parseInt(str);
+            }
+            catch (NumberFormatException ignored)
+            {
+                editText_phone.setError("Phone entered has not a valid number");
+                editText_phone.requestFocus();
+                return false;
+            }
+        }
 
         str = editText_notes.getText().toString();
 
@@ -375,9 +394,13 @@ public class EditItemActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        String tagName = autoCompleteTextView.getText().toString();
+                        String tagName = autoCompleteTextView.getText().toString().trim();
                         if (!tagName.isEmpty())
                         {
+                            if (tagName.contains("# "))
+                            {
+                                tagName = tagName.replace("# ","");
+                            }
                             tagName = "# " + tagName;
                             for (Tag tag : allTags)
                             {

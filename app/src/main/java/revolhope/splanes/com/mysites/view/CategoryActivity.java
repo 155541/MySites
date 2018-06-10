@@ -109,7 +109,7 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onResume()
     {
         super.onResume();
-        dao.getItems(new AppDatabase.OnSelect<Item>()
+        dao.getItemsByCategory(currCategory.getId(), new AppDatabase.OnSelect<Item>()
         {
             @Override
             public void select(final List<Item> selection)

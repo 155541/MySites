@@ -907,7 +907,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
             String query =
                     " SELECT * FROM " + TABLE_ITEM + " i LEFT JOIN "
-                    + TABLE_LINK_ITEM_CATEGORY + "link ON  i." + ITEM_ID + " = link." + LINK_ITEM_CATEGORY_ID_ITEM
+                    + TABLE_LINK_ITEM_CATEGORY + " link ON  i." + ITEM_ID + " = link." + LINK_ITEM_CATEGORY_ID_ITEM
                     + " WHERE link." + LINK_ITEM_CATEGORY_ID_CATEGORY + " = ?";
             String query2 = "SELECT * FROM " + TABLE_TAG + " tag" +
                     " LEFT JOIN " + TABLE_LINK_ITEM_TAG + " link ON tag." + TAG_ID + " = link." + LINK_ITEM_TAG_ID_TAG +

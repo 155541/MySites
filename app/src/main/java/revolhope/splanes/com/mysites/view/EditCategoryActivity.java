@@ -1,5 +1,6 @@
 package revolhope.splanes.com.mysites.view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -168,7 +169,12 @@ public class EditCategoryActivity extends AppCompatActivity {
                                 }
                                 else
                                 {
-                                    // TODO:
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "Oops, we've got a problem with resources...", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                 }
                             }
                         };
@@ -210,7 +216,12 @@ public class EditCategoryActivity extends AppCompatActivity {
                                 }
                                 else
                                 {
-                                    // TODO
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "Oops, we've got a problem with resources...", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                 }
                             }
                         };
@@ -227,8 +238,8 @@ public class EditCategoryActivity extends AppCompatActivity {
                 {
                     if (checkFields())
                     {
-                        final String name = editText_name.getText().toString();
-                        String description = editText_description.getText().toString();
+                        final String name = editText_name.getText().toString().trim();
+                        String description = editText_description.getText().toString().trim();
                         String icon = (String) imageView_icon.getTag();
                         String color = (String) imageView_color.getTag();
 
@@ -331,6 +342,7 @@ public class EditCategoryActivity extends AppCompatActivity {
         private Resource selectedResource;
         private int resourceType;
 
+        @SuppressLint("InflateParams")
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
