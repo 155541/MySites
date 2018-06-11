@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import revolhope.splanes.com.mysites.R;
+import revolhope.splanes.com.mysites.helper.Constants;
 import revolhope.splanes.com.mysites.model.Item;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
@@ -31,13 +32,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
     private List<Holder> holders;
     private FragmentManager fragmentManager;
     private ViewGroup viewGroup;
+    private ItemAdapterListener listener;
 
-    public ItemAdapter(@NonNull Context context, FragmentManager fragmentManager)
+    public ItemAdapter(@NonNull Context context, FragmentManager fragmentManager, ItemAdapterListener listener)
     {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.fragmentManager = fragmentManager;
         holders = new ArrayList<>();
+        this.listener = listener;
     }
 
     @NonNull
@@ -54,7 +57,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
         return holder;
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position)
     {
@@ -68,6 +70,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
             holder.backFragment.context = context;
             holder.frontFragment.findViews(inflater, viewGroup);
             holder.backFragment.findViews(inflater, viewGroup);
+
+            holder.listener = listener;
+            holder.item = item;
 
             // FRONT
             holder.frontFragment.name.setText(item.getName());
@@ -142,6 +147,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
         private FrameLayout layout;
         private ItemFrontFragment frontFragment;
         private ItemBackFragment backFragment;
+        private ItemAdapterListener listener;
+        private Item item;
         private boolean isSwapped;
 
         private Holder (View view, @NonNull final FragmentManager fragmentManager)
@@ -151,6 +158,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
 
             frontFragment = new ItemFrontFragment();
             backFragment = new ItemBackFragment();
+
+            backFragment.callback = new ItemCallback()
+            {
+                @Override
+                public void onClick(int code)
+                {
+                    listener.onClick(item, code);
+                }
+            };
 
             id = generateId();
             layout = view.findViewById(R.id.container);
@@ -256,6 +272,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
             private ImageView hashtags;
             private ImageView delete;
 
+            private ItemCallback callback;
+
             @Override
             public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                                      Bundle savedInstanceState) {
@@ -285,7 +303,40 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                 edit = view.findViewById(R.id.imageView_button_edit);
                 hashtags = view.findViewById(R.id.imageView_button_hashtag);
                 delete = view.findViewById(R.id.imageView_button_delete);
+
+                hashtags.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+
+                    }
+                });
+
+                edit.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        callback.onClick(Constants.ITEM_CODE_EDIT);
+                    }
+                });
+
             }
         }
+
+        private interface ItemCallback
+        {
+            void onClick(int code);
+        }
+
     }
+
+
+    public interface ItemAdapterListener
+    {
+        void onClick(Item item, int code);
+        // TODO: UBICATION
+    }
+
 }

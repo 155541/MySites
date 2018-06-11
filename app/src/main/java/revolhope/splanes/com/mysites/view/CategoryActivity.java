@@ -37,8 +37,9 @@ import revolhope.splanes.com.mysites.helper.AppDatabaseDao;
 import revolhope.splanes.com.mysites.helper.Constants;
 import revolhope.splanes.com.mysites.model.Category;
 import revolhope.splanes.com.mysites.model.Item;
+import revolhope.splanes.com.mysites.model.Tag;
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends AppCompatActivity implements ItemAdapter.ItemAdapterListener {
 
     private ItemAdapter itemAdapter;
     private AppDatabaseDao dao;
@@ -101,7 +102,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        itemAdapter = new ItemAdapter(this, getSupportFragmentManager());
+        itemAdapter = new ItemAdapter(this, getSupportFragmentManager(), this);
         recyclerView.setAdapter(itemAdapter);
     }
 
@@ -200,6 +201,36 @@ public class CategoryActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onClick(Item item, int code)
+    {
+        switch (code)
+        {
+
+            case Constants.ITEM_CODE_EDIT:
+
+                Intent intent = new Intent(this, EditItemActivity.class);
+                intent.putExtra(Constants.EXTRA_CATEGORY, currCategory);
+                intent.putExtra(Constants.EXTRA_ITEM_ID, item.getId());
+                intent.putExtra(Constants.EXTRA_ITEM_NAME, item.getName());
+                intent.putExtra(Constants.EXTRA_ITEM_PHONE, item.getPhone());
+                intent.putExtra(Constants.EXTRA_ITEM_LOCATION, item.getLocation());
+                intent.putExtra(Constants.EXTRA_ITEM_MAIL, item.getMail());
+                intent.putExtra(Constants.EXTRA_ITEM_WEB, item.getWeb());
+                intent.putExtra(Constants.EXTRA_ITEM_NOTES, item.getNotes());
+                intent.putExtra(Constants.EXTRA_ITEM_UBICATION, item.getUbication());
+                intent.putExtra(Constants.EXTRA_ITEM_TAG_ARRAY, item.getTags().toArray(new Tag[0]));
+
+                startActivity(intent);
+
+                return;
+            case Constants.ITEM_CODE_DELETE:
+                return;
+            case Constants.ITEM_CODE_TAGS:
+                return;
+        }
+    }
+
     public static class ConfirmationDialog extends DialogFragment
     {
         ConfirmationResult callback;
@@ -253,6 +284,9 @@ public class CategoryActivity extends AppCompatActivity {
             }
         }
     }
+
+
+
 
     private interface ConfirmationResult
     {

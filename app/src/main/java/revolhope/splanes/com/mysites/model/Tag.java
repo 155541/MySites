@@ -2,9 +2,10 @@ package revolhope.splanes.com.mysites.model;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Tag
+public class Tag implements Serializable
 {
     private String id;
     private String name;
