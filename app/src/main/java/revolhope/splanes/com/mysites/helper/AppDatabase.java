@@ -300,8 +300,14 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         async.execute(categories.toArray(new Category[0]));
     }
 
+    @Override
+    public void updateItems(List<Item> items, OnUpdate callback)
+    {
+        UpdateItemAsync async = new UpdateItemAsync(this.getWritableDatabase(), callback);
+        async.execute(items.toArray(new Item[0]));
+    }
 
-// ============================================================================
+    // ============================================================================
 //                                    REMOVES
 // ============================================================================
 
@@ -986,7 +992,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         {
             String query =
                     " SELECT * FROM " + TABLE_TAG + " t LEFT JOIN "
-                    + TABLE_LINK_ITEM_TAG + "link ON  t." + TAG_ID + " = link." + LINK_ITEM_TAG_ID_TAG
+                    + TABLE_LINK_ITEM_TAG + " link ON  t." + TAG_ID + " = link." + LINK_ITEM_TAG_ID_TAG
                     + " WHERE link." + LINK_ITEM_TAG_ID_ITEM + " = ?";
 
             try (Cursor cursor = db.rawQuery(query, new String[]{ itemId }))
@@ -1160,6 +1166,104 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 }
             }
             //TODO: db.close();
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean)
+        {
+            callback.update(aBoolean);
+        }
+    }
+
+    private static class UpdateItemAsync extends AsyncTask<Item, Void, Boolean>
+    {
+        private OnUpdate callback;
+        private SQLiteDatabase db;
+
+        private UpdateItemAsync(SQLiteDatabase db, OnUpdate callback)
+        {
+            this.callback = callback;
+            this.db = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Item... items)
+        {
+            ContentValues values = new ContentValues();
+            ContentValues valuesTag = new ContentValues();
+
+            String query = "SELECT * FROM " + TABLE_LINK_ITEM_TAG + " WHERE " + LINK_ITEM_TAG_ID_ITEM + " = ?";
+            String tagId;
+            List<String> tagsId = new ArrayList<>();
+
+            for (Item item : items)
+            {
+
+                values.put(ITEM_ID, item.getId());
+                values.put(ITEM_NAME, item.getName());
+                values.put(ITEM_PHONE, item.getPhone());
+                values.put(ITEM_LOCATION, item.getPhone());
+                values.put(ITEM_MAIL, item.getPhone());
+                values.put(ITEM_WEB, item.getPhone());
+                values.put(ITEM_NOTES, item.getPhone());
+                values.put(ITEM_UBICATION, item.getPhone());
+
+                try (Cursor cursor = db.rawQuery(query, new String[] { item.getId() }))
+                {
+                    if (cursor != null && cursor.moveToFirst())
+                    {
+                        do
+                        {
+                            tagId = cursor.getString(cursor.getColumnIndex(LINK_ITEM_TAG_ID_TAG));
+                            tagsId.add(tagId);
+
+                        } while(cursor.moveToNext());
+                    }
+                }
+                boolean exists;
+                for (Tag tag : item.getTags())
+                {
+                    exists = false;
+
+                    for (String id : tagsId)
+                    {
+                        if (tag.getId().equals(id))
+                        {
+                            exists = true;
+                            tagsId.remove(id);
+                            break;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        valuesTag.put(LINK_ITEM_TAG_ID_ITEM, item.getId());
+                        valuesTag.put(LINK_ITEM_TAG_ID_TAG, tag.getId());
+                        int i = db.update(TABLE_LINK_ITEM_TAG, valuesTag, LINK_ITEM_TAG_ID_ITEM + " = ?", new String[] { item.getId() });
+                        if (i != 1)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                for (String id : tagsId)
+                {
+                    int i = db.delete(TABLE_LINK_ITEM_TAG,
+                            LINK_ITEM_TAG_ID_ITEM + " = ? AND " + LINK_ITEM_TAG_ID_TAG + " = ?",
+                            new String[]{ item.getId(), id });
+                    if (i != 1)
+                    {
+                        return false;
+                    }
+                }
+
+                if (db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = ?", new String[]{ item.getId() }) != 1)
+                {
+                    return false;
+                }
+            }
             return true;
         }
 

@@ -35,7 +35,10 @@ public interface AppDatabaseDao
 
     // UPDATES
     void updateCategories(List<Category> categories, AppDatabase.OnUpdate callback);
+    void updateItems(List<Item> items, AppDatabase.OnUpdate callback);
+
 
     // REMOVES
     void removeCategories(List<Category> categories, AppDatabase.OnRemove callback);
+
 }

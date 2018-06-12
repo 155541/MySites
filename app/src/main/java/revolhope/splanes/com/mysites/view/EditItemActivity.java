@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import revolhope.splanes.com.mysites.R;
@@ -60,6 +61,7 @@ public class EditItemActivity extends AppCompatActivity
 
 
     private Category currCategory;
+    private Item itemToUpdate;
     private List<Tag> tags;
     private TagAdapter adapter;
     private boolean isNew;
@@ -99,10 +101,21 @@ public class EditItemActivity extends AppCompatActivity
         recyclerViewTags.setVisibility(View.GONE);
         textView_noTags.setVisibility(View.VISIBLE);
 
-        if (intent != null && intent.hasExtra(Constants.EXTRA_CATEGORY) && intent.hasExtra(Constants.EXTRA_ITEM) && actionBar != null)
+        if (intent != null && intent.hasExtra(Constants.EXTRA_CATEGORY) && intent.hasExtra(Constants.EXTRA_ITEM_ID) && actionBar != null)
         {
             currCategory = (Category) intent.getSerializableExtra(Constants.EXTRA_CATEGORY);
-            Item itemToUpdate = (Item) intent.getSerializableExtra(Constants.EXTRA_ITEM);
+
+            String id = intent.getStringExtra(Constants.EXTRA_ITEM_ID);
+            String name = intent.getStringExtra(Constants.EXTRA_ITEM_NAME);
+            String phone = intent.getStringExtra(Constants.EXTRA_ITEM_PHONE);
+            String location = intent.getStringExtra(Constants.EXTRA_ITEM_LOCATION);
+            String mail = intent.getStringExtra(Constants.EXTRA_ITEM_MAIL);
+            String web = intent.getStringExtra(Constants.EXTRA_ITEM_WEB);
+            String notes = intent.getStringExtra(Constants.EXTRA_ITEM_NOTES);
+            String ubication = intent.getStringExtra(Constants.EXTRA_ITEM_UBICATION);
+            Tag[] aux = (Tag[]) intent.getSerializableExtra(Constants.EXTRA_ITEM_TAG_ARRAY);
+            itemToUpdate = new Item(id, name, phone, location, mail, web, notes, ubication, Arrays.asList(aux));
+
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle("Update Site");
 
@@ -113,8 +126,8 @@ public class EditItemActivity extends AppCompatActivity
             editText_web.setText(itemToUpdate.getWeb());
             editText_notes.setText(itemToUpdate.getNotes());
 
-            CoordinatorLayout layout = findViewById(R.id.constraintLayout);
-            layout.setBackgroundColor(getColor(currCategory.getColor().getResource()));
+            //ConstraintLayout layout = findViewById(R.id.constraintLayout);
+            //layout.setBackgroundColor(getColor(currCategory.getColor().getResource()));
             imageView_categoryIcon.setImageDrawable(getDrawable(currCategory.getIcon().getResource()));
             button_done.setText(R.string.button_new_item_update);
 
@@ -195,7 +208,9 @@ public class EditItemActivity extends AppCompatActivity
                     }
                     else
                     {
-                        // TODO: TAKE A LOOK! -> STILL IMPLEMENT
+                        List<Item> aux = new ArrayList<>();
+                        list.add(itemToUpdate);
+                        //dao.updateItem(aux); TODO: IMPLEMENT!
                     }
                 }
             }
