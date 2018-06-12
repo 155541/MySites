@@ -196,6 +196,11 @@ public class CategoryActivity extends AppCompatActivity implements ItemAdapter.I
                 dialog.show(getSupportFragmentManager(), "ConfirmationDialog");
 
                 return true;
+
+            case R.id.menu_print_db:
+
+                dao.printDb();
+
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -318,7 +318,19 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
         async.execute(categories.toArray(new Category[0]));
     }
 
+    // TODO:
+    // TODO:
+    // TODO: TO REMOVE
 
+    @Override
+    public void printDb()
+    {
+        this.print();
+    }
+
+    // TODO: END
+    // TODO:
+    // TODO:
 // ============================================================================
 //                                    ASYNC TASK
 // ============================================================================
@@ -1203,11 +1215,11 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 values.put(ITEM_ID, item.getId());
                 values.put(ITEM_NAME, item.getName());
                 values.put(ITEM_PHONE, item.getPhone());
-                values.put(ITEM_LOCATION, item.getPhone());
-                values.put(ITEM_MAIL, item.getPhone());
-                values.put(ITEM_WEB, item.getPhone());
-                values.put(ITEM_NOTES, item.getPhone());
-                values.put(ITEM_UBICATION, item.getPhone());
+                values.put(ITEM_LOCATION, item.getLocation());
+                values.put(ITEM_MAIL, item.getMail());
+                values.put(ITEM_WEB, item.getWeb());
+                values.put(ITEM_NOTES, item.getNotes());
+                values.put(ITEM_UBICATION, item.getUbication());
 
                 try (Cursor cursor = db.rawQuery(query, new String[] { item.getId() }))
                 {
@@ -1343,6 +1355,130 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
     public interface OnSelectMap<K,V>
     {
         void select(Map<K,V> selectedMap);
+    }
+
+// ============================================================================
+//                                    PRINT DB
+// ============================================================================
+
+    public void print()
+    {
+        String query = "SELECT * FROM " + TABLE_COLOR;
+        SQLiteDatabase db = getReadableDatabase();
+
+        System.out.println(" :......: TABLE COLOR :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: COLOR ID :......: " + c.getString(c.getColumnIndex(COLOR_ID)));
+                    System.out.println(" :......: COLOR RESOURCE :......: " + c.getInt(c.getColumnIndex(COLOR_RESOURCE)));
+                    System.out.println(" :......: COLOR BACKGROUND RESOURCE :......: " + c.getInt(c.getColumnIndex(COLOR_RESOURCE_BACKGROUND)));
+
+                } while(c.moveToNext());
+            }
+        }
+
+        query = "SELECT * FROM " + TABLE_ICON;
+        System.out.println(" :......: TABLE ICON :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: ICON ID :......: " + c.getString(c.getColumnIndex(ICON_ID)));
+                    System.out.println(" :......: ICON RESOURCE :......: " + c.getInt(c.getColumnIndex(ICON_RESOURCE)));
+
+                } while(c.moveToNext());
+            }
+        }
+
+        query = "SELECT * FROM " + TABLE_CATEGORY;
+        System.out.println(" :......: TABLE CATEGORY :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: CATEGORY ID :......: " + c.getString(c.getColumnIndex(CATEGORY_ID)));
+                    System.out.println(" :......: CATEGORY NAME :......: " + c.getString(c.getColumnIndex(CATEGORY_NAME)));
+                    System.out.println(" :......: CATEGORY COLOR ID :......: " + c.getString(c.getColumnIndex(CATEGORY_COLOR)));
+                    System.out.println(" :......: CATEGORY ICON ID :......: " + c.getString(c.getColumnIndex(CATEGORY_ICON)));
+                    System.out.println(" :......: CATEGORY DESCRIPTION :......: " + c.getString(c.getColumnIndex(CATEGORY_DESCRIPTION)));
+
+                } while(c.moveToNext());
+            }
+        }
+
+        query = "SELECT * FROM " + TABLE_ITEM;
+        System.out.println(" :......: TABLE ITEM :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: ITEM ID :......: " + c.getString(c.getColumnIndex(ITEM_ID)));
+                    System.out.println(" :......: ITEM NAME :......: " + c.getString(c.getColumnIndex(ITEM_NAME)));
+                    System.out.println(" :......: ITEM PHONE :......: " + c.getString(c.getColumnIndex(ITEM_PHONE)));
+                    System.out.println(" :......: ITEM LOCATION :......: " + c.getString(c.getColumnIndex(ITEM_LOCATION)));
+                    System.out.println(" :......: ITEM MAIL :......: " + c.getString(c.getColumnIndex(ITEM_MAIL)));
+                    System.out.println(" :......: ITEM WEB :......: " + c.getString(c.getColumnIndex(ITEM_WEB)));
+                    System.out.println(" :......: ITEM NOTES :......: " + c.getString(c.getColumnIndex(ITEM_NOTES)));
+                    System.out.println(" :......: ITEM UBICATION :......: " + c.getString(c.getColumnIndex(ITEM_UBICATION)));
+
+                } while(c.moveToNext());
+            }
+        }
+
+        query = "SELECT * FROM " + TABLE_TAG;
+        System.out.println(" :......: TABLE TAG :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: TAG ID :......: " + c.getString(c.getColumnIndex(TAG_ID)));
+                    System.out.println(" :......: TAG NAME :......: " + c.getString(c.getColumnIndex(TAG_NAME)));
+
+                } while(c.moveToNext());
+            }
+        }
+
+        query = "SELECT * FROM " + TABLE_LINK_ITEM_CATEGORY;
+        System.out.println(" :......: TABLE LINK ITEM-CATEGORY :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: LINK ID CATEGORY :......: " + c.getString(c.getColumnIndex(LINK_ITEM_CATEGORY_ID_CATEGORY)));
+                    System.out.println(" :......: LINK ID ITEM :......: " + c.getString(c.getColumnIndex(LINK_ITEM_CATEGORY_ID_ITEM)));
+
+                } while(c.moveToNext());
+            }
+        }
+
+        query = "SELECT * FROM " + TABLE_LINK_ITEM_TAG;
+        System.out.println(" :......: TABLE LINK ITEM-TAG :......:");
+        try (Cursor c = db.rawQuery(query, null))
+        {
+            if (c != null && c.moveToFirst())
+            {
+                do
+                {
+                    System.out.println(" :......: LINK ID TAG :......: " + c.getString(c.getColumnIndex(LINK_ITEM_TAG_ID_TAG)));
+                    System.out.println(" :......: LINK ID ITEM :......: " + c.getString(c.getColumnIndex(LINK_ITEM_TAG_ID_ITEM)));
+
+                } while(c.moveToNext());
+            }
+        }
     }
 
 }

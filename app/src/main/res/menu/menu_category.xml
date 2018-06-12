@@ -12,4 +12,11 @@
         android:orderInCategory="100"
         android:title="@string/menu_action_remove_category"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_print_db"
+        android:orderInCategory="100"
+        android:title="Print db"
+        app:showAsAction="never" />
+
 </menu>

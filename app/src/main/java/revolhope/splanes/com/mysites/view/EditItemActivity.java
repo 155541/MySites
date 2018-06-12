@@ -210,7 +210,14 @@ public class EditItemActivity extends AppCompatActivity
                     {
                         List<Item> aux = new ArrayList<>();
                         list.add(itemToUpdate);
-                        //dao.updateItem(aux); TODO: IMPLEMENT!
+                        dao.updateItems(list, new AppDatabase.OnUpdate()
+                        {
+                            @Override
+                            public void update(boolean result)
+                            {
+                                System.out.println(" :......: UPDATE ITEM :......: " + result);
+                            }
+                        });
                     }
                 }
             }

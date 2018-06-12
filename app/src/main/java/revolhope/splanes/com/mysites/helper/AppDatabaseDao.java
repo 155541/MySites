@@ -41,4 +41,8 @@ public interface AppDatabaseDao
     // REMOVES
     void removeCategories(List<Category> categories, AppDatabase.OnRemove callback);
 
+
+    // PRINT TO REMOVEEEEEEEEEEE
+
+    void printDb();
 }
