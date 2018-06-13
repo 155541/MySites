@@ -1211,8 +1211,8 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
 
             for (Item item : items)
             {
-
-                values.put(ITEM_ID, item.getId());
+                String itemId = item.getId();
+                values.put(ITEM_ID, itemId);
                 values.put(ITEM_NAME, item.getName());
                 values.put(ITEM_PHONE, item.getPhone());
                 values.put(ITEM_LOCATION, item.getLocation());
@@ -1221,7 +1221,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                 values.put(ITEM_NOTES, item.getNotes());
                 values.put(ITEM_UBICATION, item.getUbication());
 
-                try (Cursor cursor = db.rawQuery(query, new String[] { item.getId() }))
+                try (Cursor cursor = db.rawQuery(query, new String[]{itemId}))
                 {
                     if (cursor != null && cursor.moveToFirst())
                     {
@@ -1271,7 +1271,7 @@ public class AppDatabase extends SQLiteOpenHelper implements AppDatabaseDao
                     }
                 }
 
-                if (db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = ?", new String[]{ item.getId() }) != 1)
+                if (db.update(TABLE_ITEM, values, ITEM_ID + " = ?", new String[]{ item.getId() }) != 1)
                 {
                     return false;
                 }

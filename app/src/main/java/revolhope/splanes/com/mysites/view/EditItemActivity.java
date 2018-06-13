@@ -209,8 +209,8 @@ public class EditItemActivity extends AppCompatActivity
                     else
                     {
                         List<Item> aux = new ArrayList<>();
-                        list.add(itemToUpdate);
-                        dao.updateItems(list, new AppDatabase.OnUpdate()
+                        aux.add(itemToUpdate);
+                        dao.updateItems(aux, new AppDatabase.OnUpdate()
                         {
                             @Override
                             public void update(boolean result)

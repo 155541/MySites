@@ -115,9 +115,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                 holder.backFragment.linearLayoutUbication.setVisibility(View.GONE);
                 holder.backFragment.linearLayoutUbicationNoInfo.setVisibility(View.VISIBLE);
             }
-
-            // TODO: Set onClick listener to BackCard buttons
-
         }
 
     }
@@ -138,6 +135,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
     public void setItems(List<Item> items)
     {
         this.items = items;
+        for (Holder holder : holders)
+        {
+            holder.setFrontView();
+        }
         notifyDataSetChanged();
     }
 
@@ -150,10 +151,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
         private ItemAdapterListener listener;
         private Item item;
         private boolean isSwapped;
+        private FragmentManager fragmentManager;
 
         private Holder (View view, @NonNull final FragmentManager fragmentManager)
         {
             super(view);
+
+            this.fragmentManager = fragmentManager;
             isSwapped = false;
 
             frontFragment = new ItemFrontFragment();
@@ -202,6 +206,19 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.Holder>
                             .commit();
                 }
             });
+        }
+
+        private void setFrontView()
+        {
+            isSwapped = false;
+            fragmentManager.beginTransaction()
+                    .setCustomAnimations(
+                            R.animator.flip_down_in,
+                            R.animator.flip_down_out,
+                            R.animator.flip_up_in,
+                            R.animator.flip_up_out)
+                    .replace(layout.getId(), frontFragment, String.valueOf(getAdapterPosition()))
+                    .commit();
         }
 
         private int generateId()
